@@ -115,7 +115,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Account.cpp" />
+    <ClCompile Include="Course.cpp" />
+    <ClCompile Include="Grade.cpp" />
+    <ClCompile Include="Hash.cpp" />
+    <ClCompile Include="ID.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Account.h" />
+    <ClInclude Include="Course.h" />
+    <ClInclude Include="Grade.h" />
+    <ClInclude Include="Hash.h" />
+    <ClInclude Include="ID.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
