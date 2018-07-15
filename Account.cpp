@@ -150,7 +150,7 @@ void Account::AddCourseIntoSet(IDTYPE courseID) {
 
 bool Account::IsCourseInSet(IDTYPE courseID)const {
     assert(isInit);
-    return m_setCourseID.find(courseID) == m_setCourseID.end();
+    return m_setCourseID.find(courseID) != m_setCourseID.end();
 }
 
 void Account::DelCourseOutSet(IDTYPE courseID) {

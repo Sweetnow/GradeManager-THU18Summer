@@ -28,9 +28,11 @@ const int WINDOWS_MAX_WIDTH = 80;
 const int WINDOWS_LEFT_WIDTH = 25;
 
 //选择菜单
+
 void ShowHead(), EnterMainMenu(), EnterAdminMenu(), EnterStuMenu(), EnterTeaMenu();
 
 //管理员菜单功能模块
+
 void CreateAccount();
 void DelAccount();
 void ResetAccountPwd();
@@ -44,12 +46,18 @@ void ShowAllCourse(Account&);
 bool ShowOneCourse();
 bool ShowOneCourse(Account&);
 void ChooseCourseMenu();
+
 //选课模块
+
 void ChooseCourseOne();
 void ChooseCourseFile();
+
 //学生菜单功能模块
+
 void ShowStuGrade(Account&);
+
 //教师菜单功能模块
+
 void CreateCourse();
 bool DelCourse();
 void EnterCourseMenu();
@@ -57,6 +65,7 @@ void EnterCourseMenu();
 
 
 //其他功能模块
+
 void Login();    //登陆
 void SaveFile(), LoadFile();    //文件操作
 
@@ -121,7 +130,7 @@ void EnterAdminMenu() {
             N = -1;
             cin.clear();
             cin.ignore(INT_MAX, '\n');
-            cout << " 请输入所选菜单序号：";
+            cout << " 请输入所选菜单序号:";
             cin >> N;
             switch (N) {
             case 1:
@@ -177,6 +186,7 @@ void EnterAdminMenu() {
     }
 }
 
+//学生主菜单
 void EnterStuMenu() {
     int N;
     //菜单循环
@@ -197,7 +207,7 @@ void EnterStuMenu() {
             N = -1;
             cin.clear();
             cin.ignore(INT_MAX, '\n');
-            cout << " 请输入所选菜单序号：";
+            cout << " 请输入所选菜单序号:";
             cin >> N;
             switch (N) {
             case 1:
@@ -222,6 +232,8 @@ void EnterStuMenu() {
         } while (N < 0 || N > 9 || (N > 2 && N < 9));
     }
 }
+
+//教师主菜单
 void EnterTeaMenu() {
     int N;
     //菜单循环
@@ -245,7 +257,7 @@ void EnterTeaMenu() {
             N = -1;
             cin.clear();
             cin.ignore(INT_MAX, '\n');
-            cout << " 请输入所选菜单序号：";
+            cout << " 请输入所选菜单序号:";
             cin >> N;
             switch (N) {
             case 1:
@@ -276,12 +288,12 @@ void EnterTeaMenu() {
                 cout << " 输入有误，请重新输入,";
                 break;
             }
-        } while (N < 0 || N > 9 || (N > 2 && N < 9));
+        } while (N < 0 || N > 9 || (N > 4 && N < 9));
     }
 }
 
+//进入对应菜单
 void EnterMainMenu() {
-    //进入对应菜单
     switch (nowType) {
     case Account_None:
         assert(nowType != Account_None);
@@ -298,6 +310,7 @@ void EnterMainMenu() {
     }
 }
 
+//登陆逻辑与界面
 void Login() {
     std::string username, pwd;
     char ch;
@@ -366,6 +379,7 @@ void Login() {
     }
 }
 
+//创建账户
 void CreateAccount() {
     Account account;
     std::string username, pwd, pwdChk;
@@ -409,6 +423,8 @@ void CreateAccount() {
         AccountMap[account.GetID()] = account;
     }
 }
+
+//删除账户
 void DelAccount() {
     IDTYPE id;
     //初始化
@@ -446,6 +462,7 @@ void DelAccount() {
                         //查找对应课程中的学生，删除Grade
                         for (auto stu = CourseMap[*it].GetCourseStudentID().begin(); stu != CourseMap[*it].GetCourseStudentID().end(); stu++) {
                             GradeMap.erase(_GET_GRADE_ID(*stu, *it));  //删除对应的成绩
+                            AccountMap[*stu].DelCourseOutSet(*it);    //删除学生的set中的记录
                         }
                         CourseMap.erase(*it);   //删除课程中的记录
                     }
@@ -463,6 +480,8 @@ void DelAccount() {
         }
     }
 }
+
+//管理员重置密码，普通用户修改密码
 void ResetAccountPwd() {
     IDTYPE id;
     //初始化
@@ -537,6 +556,8 @@ void ResetAccountPwd() {
         } while (!isOK);
     }
 }
+
+//显示所有账户基本信息
 void ShowAllAccount() {
     //初始化
     system("cls");
@@ -549,6 +570,8 @@ void ShowAllAccount() {
         cout << endl;
     }
 }
+
+//显示所有教师账户基本信息
 void ShowAllTeacher() {
     //初始化
     system("cls");
@@ -563,9 +586,13 @@ void ShowAllTeacher() {
         }
     }
 }
+
+//查看某一教师账户详细信息
 bool ShowOneTeacher() {
     return false;
 }
+
+//显示所有学生账户基本信息
 void ShowAllStudent() {
     //初始化
     system("cls");
@@ -580,6 +607,8 @@ void ShowAllStudent() {
         }
     }
 }
+
+//查看某一学生账户详细信息
 bool ShowOneStudent() {
     IDTYPE id;
     while (true) {
@@ -600,6 +629,7 @@ bool ShowOneStudent() {
     }
     return false;
 }
+
 //显示全部课程
 void ShowAllCourse() {
     //初始化
@@ -608,11 +638,12 @@ void ShowAllCourse() {
     cout << " ┄┄┄┄┄┄┄┄┄┄┄所┄┄┄┄┄┄┄┄┄┄有┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     //显示基本信息
     for (auto it = CourseMap.begin(); it != CourseMap.end(); it++) {
-        cout << " 课程ID " << it->first << "  ";
+        cout << " 课程ID:" << it->first << "  ";
         it->second.Display();
         cout << endl;
     }
 }
+
 //显示教师类tea开设的课程
 void ShowAllCourse(Account& tea) {
     assert(tea.GetAccountType() == Account_Teacher);
@@ -622,17 +653,23 @@ void ShowAllCourse(Account& tea) {
     cout << " ┄┄┄┄┄┄┄┄┄┄┄开┄┄┄┄┄┄┄┄┄┄设┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     //显示基本信息
     for (auto it = tea.GetAccountCourseID().begin(); it != tea.GetAccountCourseID().end(); it++) {
-        cout << " 课程ID " << *it << "  ";
+        cout << " 课程ID:" << *it << "  ";
         CourseMap[*it].Display();
         cout << endl;
     }
 }
+
+//查看某一课程详细信息
 bool ShowOneCourse() {
     return false;
 }
+
+//查看tea开设的某一课程详细信息
 bool ShowOneCourse(Account& tea) {
     return false;
 }
+
+//为学生选课菜单
 void ChooseCourseMenu() {
     int N;
     //菜单循环
@@ -652,7 +689,7 @@ void ChooseCourseMenu() {
             N = -1;
             cin.clear();
             cin.ignore(INT_MAX, '\n');
-            cout << " 请输入所选菜单序号：";
+            cout << " 请输入所选菜单序号:";
             cin >> N;
             switch (N) {
             case 1:
@@ -672,8 +709,12 @@ void ChooseCourseMenu() {
         } while (isInputError);
     }
 }
+
+//手动为学生选课界面与逻辑(逐一添加)
 void ChooseCourseOne() {
+    //主循环
     while (true) {
+        //确定学生
         bool isStuSelect = false, isCourseSelect = false;
         IDTYPE StuID, CourseID;
         ShowAllStudent();
@@ -690,6 +731,7 @@ void ChooseCourseOne() {
             if (StuID == 0)return;
         }
         auto *nowStu = &AccountMap[StuID];
+        //确定课程
         bool isBreak = false;
         while (!isBreak) {
             ShowAllCourse();
@@ -726,8 +768,12 @@ void ChooseCourseOne() {
         }
     }
 }
+
+//从文件导入选课信息
 void ChooseCourseFile() {
 }
+
+//显示学生stu成绩信息
 void ShowStuGrade(Account& stu) {
     assert(stu.GetAccountType() == Account_Student);
     double sumResult = 0;    //统一转换为绩点处理
@@ -752,60 +798,91 @@ void ShowStuGrade(Account& stu) {
         cout << " 平均绩点为:" << sumResult / allPoint << endl;
     cout << "\n "; system("pause");
 }
+
+//教师创建课程
 void CreateCourse() {
-    Course course;
-    std::string coursename;
-    int point;
-    int type;
-    cout << "请输入开设课程名称与学分：";
-    cin >> coursename >> point;
-    while (point <= 0) {
-        cout << "输入的学分数必须大于0，请重新输入：";
+    //主循环
+    while (true) {
+        Course course;
+        std::string coursename;
+        int point;
+        int type;
+        //课程名
+        cout << " 请输入开设课程名称(0-返回上一级):";
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cin >> coursename;
+        if (coursename == "0")return;
+        //学分
+        cout << " 请输入该课程学分(0-返回上一级):";
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
         cin >> point;
-    }
-    do {
-        cout << "请输入课程评价方式（输入1-3中一个数字，对应关系为：1-百分制  2-等级制  3-P/F）";
+        if (point == 0)return;
+        while (point <= 0) {
+            cout << " 学分数必须大于0，请重新输入(0-返回上一级):";
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cin >> point;
+            if (point == 0)return;
+        }
+        //计分方式
+        cout << " 请输入课程评价方式(1-百分制 2-等级制 3-P/F 0-返回上一级):";
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
         cin >> type;
-    } while (type < 0 || type>3);
-    course.Init(coursename, point, (RESULT_TYPE)type);
-    CourseMap[course.GetID()] = course;
-    nowAccount->AddCourseIntoSet(course.GetID());
+        if (type == 0)return;
+        while (type < 0 || type>3) {
+            cout << " 输入有误，请重新输入课程评价方式(1-百分制 2-等级制 3-P/F 0-返回上一级):";
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cin >> type;
+            if (type == 0)return;
+        }
+        course.Init(coursename, point, (RESULT_TYPE)type);
+        CourseMap[course.GetID()] = course;
+        nowAccount->AddCourseIntoSet(course.GetID());
+        cout << " 课程创建成功!\n" << endl;
+    }
 }
 
+//教师删除课程
 bool DelCourse() {
-
     IDTYPE id;
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄删┄┄┄┄┄┄┄┄┄┄除┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     while (true) {
         cin.clear();
         cin.ignore(INT_MAX, '\n');
-        cout << " 输入要查看的学生账户ID(输入0返回上一级):";
+        cout << " 输入要删除的课程ID(输入0返回上一级):";
         cin >> id;
         if (id == 0) {
             return true;
         }
-        if (AccountMap.find(id) == AccountMap.end() || AccountMap[id].GetAccountType() != Account_Student) {
+        if (CourseMap.find(id) == CourseMap.end() || !nowAccount->IsCourseInSet(id)) {
             cout << " 输入有误，请重新输入，";
         }
         else {
-            ShowStuGrade(AccountMap[id]);
+            //查找对应课程中的学生，删除Grade
+            for (auto stu = CourseMap[id].GetCourseStudentID().begin(); stu != CourseMap[id].GetCourseStudentID().end(); stu++) {
+                GradeMap.erase(_GET_GRADE_ID(*stu, id));  //删除对应的成绩
+                AccountMap[*stu].DelCourseOutSet(id);    //删除学生set中的记录
+            }
+            //删除开设的课程
+            CourseMap.erase(id);   //删除课程中的记录
+            nowAccount->DelCourseOutSet(id);    //删除教师中课程的记录
+            cout << " 删除课程成功!\n" << endl;
+            cout << ' '; system("pause");
             break;
         }
     }
     return false;
-    //删除开设的课程
-    for (auto it = AccountMap[id].GetAccountCourseID().begin(); it != AccountMap[id].GetAccountCourseID().end(); it++) {
-        //查找对应课程中的学生，删除Grade
-        for (auto stu = CourseMap[*it].GetCourseStudentID().begin(); stu != CourseMap[*it].GetCourseStudentID().end(); stu++) {
-            GradeMap.erase(_GET_GRADE_ID(*stu, *it));  //删除对应的成绩
-        }
-        CourseMap.erase(*it);   //删除课程中的记录
-    }
 }
 
+//课程成绩操作菜单
 void EnterCourseMenu() {
 }
 
-
+//写二进制文件，保存全部信息
 void SaveFile() {
     std::ofstream File(FileName, std::ios_base::binary);
     if (File.is_open()) {
@@ -842,6 +919,7 @@ void SaveFile() {
     }
 }
 
+//读二进制文件，读取全部信息
 void LoadFile() {
     std::ifstream File(FileName, std::ios_base::binary);
     if (File.is_open()) {

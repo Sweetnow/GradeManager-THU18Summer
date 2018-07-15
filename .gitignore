@@ -35,3 +35,4 @@
 /Release/*
 /.vs/*
 *.bin
+/x64/*
