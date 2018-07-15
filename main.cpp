@@ -58,11 +58,16 @@ void ShowStuGrade(Account&);
 
 //教师菜单功能模块
 
-void CreateCourse();
+bool CreateCourse();
 bool DelCourse();
-void EnterCourseMenu();
+void EnterCourseMenu(IDTYPE);
 //课程菜单功能模块
-
+void ShowAllStuInCourse();
+void InputGrade();
+void ChangeGrade();
+void DelGrade();
+void InputGradeFile();
+void SortAndShow();
 
 //其他功能模块
 
@@ -151,7 +156,7 @@ void EnterAdminMenu() {
             case 5:
                 while (!isBreak) {
                     ShowAllTeacher();
-                    ShowOneTeacher();
+                    isBreak = ShowOneTeacher();
                 }
                 break;
             case 6:
@@ -163,7 +168,7 @@ void EnterAdminMenu() {
             case 7:
                 while (!isBreak) {
                     ShowAllCourse();
-                    ShowOneCourse();
+                    isBreak = ShowOneCourse();
                 }
                 break;
             case 8:
@@ -264,10 +269,16 @@ void EnterTeaMenu() {
                 ResetAccountPwd();
                 break;
             case 2:
-                EnterCourseMenu();
+                while (!isBreak) {
+                    ShowAllCourse(*nowAccount);
+                    isBreak = ShowOneCourse(*nowAccount);
+                }
                 break;
             case 3:
-                CreateCourse();
+                while (!isBreak) {
+                    ShowAllCourse(*nowAccount);
+                    isBreak = CreateCourse();
+                }
                 break;
             case 4:
                 while (!isBreak) {
@@ -331,7 +342,7 @@ void Login() {
         if (it == AccountMap.end()) {
             bool isInputCorrect = false;    //是否正确输入
             do {
-                cout << " 用户名或密码输入错误！是否重新输入(Y/N):";
+                cout << " 用户名或密码输入错误!是否重新输入(Y/N):";
                 cin.clear();
                 cin.ignore(INT_MAX, '\n');
                 cin >> ch;
@@ -358,7 +369,7 @@ void Login() {
         else {
             bool isInputCorrect = false;    //是否正确输入
             do {
-                cout << " 用户名或密码输入错误！是否重新输入(Y/N):";
+                cout << " 用户名或密码输入错误!是否重新输入(Y/N):";
                 cin.clear();
                 cin.ignore(INT_MAX, '\n');
                 cin >> ch;
@@ -381,7 +392,6 @@ void Login() {
 
 //创建账户
 void CreateAccount() {
-    Account account;
     std::string username, pwd, pwdChk;
     int type;
     //初始化
@@ -390,6 +400,8 @@ void CreateAccount() {
     cout << " ┄┄┄┄┄┄┄┄┄┄┄创┄┄┄┄┄┄┄┄┄┄建┄┄┄┄┄┄┄┄┄┄┄┄帐┄┄┄┄┄┄┄┄┄┄┄户┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     //主循环
     while (true) {
+        bool sameName;
+        Account account;
         cin.clear();
         cin.ignore(INT_MAX, '\n');
         cout << " 请输入要创建的账户类型(1-学生 2-教师 0-返回上一级):";
@@ -403,8 +415,27 @@ void CreateAccount() {
             if (type == 0)return;
         }
         cout << " 请输入账户名(0-返回上一级):";
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
         cin >> username;
         if (username == "0")return;
+        do {
+            sameName = false;
+            for (auto it = AccountMap.begin(); it != AccountMap.end(); it++) {
+                if (it->second.GetUserName() == username) {
+                    sameName = true;
+                    break;
+                }
+            }
+            if (sameName) {
+                cout << " 该账户名已被占用，请重新输入账户名(0-返回上一级):";
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+                cin >> username;
+                if (username == "0")return;
+            }
+        } while (sameName);
+
         do {
             cin.clear();
             cin.ignore(INT_MAX, '\n');
@@ -416,11 +447,12 @@ void CreateAccount() {
             cout << " 请再次输入初始密码:";
             cin >> pwdChk;
             if (pwdChk != pwd) {
-                cout << " 两次密码输入不一致！";
+                cout << " 两次密码输入不一致!";
             }
         } while (pwdChk != pwd);
         account.Init(username, pwd, (ACCOUNT_TYPE)type);
         AccountMap[account.GetID()] = account;
+        cout << " 创建账户成功!\n" << endl;
     }
 }
 
@@ -453,7 +485,7 @@ void DelAccount() {
                     }
                 }
                 AccountMap.erase(id);
-                cout << " 账户" << id << "已被删除" << endl;
+                cout << " 账户" << id << "已被删除\n" << endl;
                 break;
             case Account_Teacher:
                 if (!AccountMap[id].GetAccountCourseID().empty()) {
@@ -468,7 +500,7 @@ void DelAccount() {
                     }
                 }
                 AccountMap.erase(id);
-                cout << " 账户" << id << "已被删除" << endl;
+                cout << " 账户" << id << "已被删除\n" << endl;
                 break;
             case Account_Administrator:
                 cout << " 禁止删除管理员账户，请重新输入，";
@@ -514,11 +546,11 @@ void ResetAccountPwd() {
                     cout << " 请再次输入新密码:";
                     cin >> pwdChk;
                     if (pwdChk != pwd) {
-                        cout << " 两次密码输入不一致！";
+                        cout << " 两次密码输入不一致!";
                     }
                 } while (pwdChk != pwd);
                 AccountMap[id].ResetPwd(pwd, *nowAccount);
-                cout << " 账户" << id << "密码修改成功" << endl;
+                cout << " 账户" << id << "密码修改成功\n" << endl;
             }
         }
     }
@@ -544,14 +576,14 @@ void ResetAccountPwd() {
             cout << " 请再次输入新密码:";
             cin >> pwdChk;
             if (pwdChk != newpwd) {
-                cout << " 两次密码输入不一致！";
+                cout << " 两次密码输入不一致!";
             }
             else if (nowAccount->ChangePwd(oldpwd, newpwd)) {
-                cout << " 密码修改成功" << endl;
+                cout << " 密码修改成功\n" << endl;
                 isOK = true;
             }
             else {
-                cout << " 旧密码输入错误！";
+                cout << " 旧密码输入错误!";
             }
         } while (!isOK);
     }
@@ -569,6 +601,7 @@ void ShowAllAccount() {
         it->second.Display();
         cout << endl;
     }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
 }
 
 //显示所有教师账户基本信息
@@ -585,6 +618,7 @@ void ShowAllTeacher() {
             cout << endl;
         }
     }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
 }
 
 //查看某一教师账户详细信息
@@ -606,6 +640,7 @@ void ShowAllStudent() {
             cout << endl;
         }
     }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
 }
 
 //查看某一学生账户详细信息
@@ -614,7 +649,7 @@ bool ShowOneStudent() {
     while (true) {
         cin.clear();
         cin.ignore(INT_MAX, '\n');
-        cout << " 输入要查看的学生账户ID(输入0返回上一级):";
+        cout << " 输入要查看的学生账户ID(0-返回上一级):";
         cin >> id;
         if (id == 0) {
             return true;
@@ -642,6 +677,7 @@ void ShowAllCourse() {
         it->second.Display();
         cout << endl;
     }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
 }
 
 //显示教师类tea开设的课程
@@ -650,6 +686,9 @@ void ShowAllCourse(Account& tea) {
     //初始化
     system("cls");
     ShowHead();
+    cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+    cout << "  当前教师ID:" << tea.GetID() << "  账户名:" << tea.GetUserName() << '\n';
+    cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
     cout << " ┄┄┄┄┄┄┄┄┄┄┄开┄┄┄┄┄┄┄┄┄┄设┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     //显示基本信息
     for (auto it = tea.GetAccountCourseID().begin(); it != tea.GetAccountCourseID().end(); it++) {
@@ -657,15 +696,50 @@ void ShowAllCourse(Account& tea) {
         CourseMap[*it].Display();
         cout << endl;
     }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
 }
 
 //查看某一课程详细信息
 bool ShowOneCourse() {
+    IDTYPE id;
+    while (true) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 输入要查看的课程ID(0-返回上一级):";
+        cin >> id;
+        if (id == 0) {
+            return true;
+        }
+        if (CourseMap.find(id) == CourseMap.end()) {
+            cout << " 输入有误，请重新输入，";
+        }
+        else {
+            EnterCourseMenu(id);
+            break;
+        }
+    }
     return false;
 }
 
 //查看tea开设的某一课程详细信息
 bool ShowOneCourse(Account& tea) {
+    IDTYPE id;
+    while (true) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 输入要查看的课程ID(0-返回上一级):";
+        cin >> id;
+        if (id == 0) {
+            return true;
+        }
+        if (CourseMap.find(id) == CourseMap.end() || !tea.IsCourseInSet(id)) {
+            cout << " 输入有误，请重新输入，";
+        }
+        else {
+            EnterCourseMenu(id);
+            break;
+        }
+    }
     return false;
 }
 
@@ -792,6 +866,7 @@ void ShowStuGrade(Account& stu) {
         sumResult += grade.Result2Pair().second * grade.Result2Pair().first;
         allPoint += grade.Result2Pair().first;
     }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     if (allPoint == 0)
         cout << " 平均绩点为: NaN" << endl;
     else
@@ -800,56 +875,55 @@ void ShowStuGrade(Account& stu) {
 }
 
 //教师创建课程
-void CreateCourse() {
-    //主循环
-    while (true) {
-        Course course;
-        std::string coursename;
-        int point;
-        int type;
-        //课程名
-        cout << " 请输入开设课程名称(0-返回上一级):";
-        cin.clear();
-        cin.ignore(INT_MAX, '\n');
-        cin >> coursename;
-        if (coursename == "0")return;
-        //学分
-        cout << " 请输入该课程学分(0-返回上一级):";
+bool CreateCourse() {
+
+    Course course;
+    std::string coursename;
+    int point;
+    int type;
+    //课程名
+    cout << " 请输入开设课程名称(0-返回上一级):";
+    cin.clear();
+    cin.ignore(INT_MAX, '\n');
+    cin >> coursename;
+    if (coursename == "0")return true;
+    //学分
+    cout << " 请输入该课程学分(0-返回上一级):";
+    cin.clear();
+    cin.ignore(INT_MAX, '\n');
+    cin >> point;
+    if (point == 0)return true;
+    while (point <= 0) {
+        cout << " 学分数必须大于0，请重新输入(0-返回上一级):";
         cin.clear();
         cin.ignore(INT_MAX, '\n');
         cin >> point;
-        if (point == 0)return;
-        while (point <= 0) {
-            cout << " 学分数必须大于0，请重新输入(0-返回上一级):";
-            cin.clear();
-            cin.ignore(INT_MAX, '\n');
-            cin >> point;
-            if (point == 0)return;
-        }
-        //计分方式
-        cout << " 请输入课程评价方式(1-百分制 2-等级制 3-P/F 0-返回上一级):";
+        if (point == 0)return true;
+    }
+    //计分方式
+    cout << " 请输入课程评价方式(1-百分制 2-等级制 3-P/F 0-返回上一级):";
+    cin.clear();
+    cin.ignore(INT_MAX, '\n');
+    cin >> type;
+    if (type == 0)return true;
+    while (type < 0 || type>3) {
+        cout << " 输入有误，请重新输入课程评价方式(1-百分制 2-等级制 3-P/F 0-返回上一级):";
         cin.clear();
         cin.ignore(INT_MAX, '\n');
         cin >> type;
-        if (type == 0)return;
-        while (type < 0 || type>3) {
-            cout << " 输入有误，请重新输入课程评价方式(1-百分制 2-等级制 3-P/F 0-返回上一级):";
-            cin.clear();
-            cin.ignore(INT_MAX, '\n');
-            cin >> type;
-            if (type == 0)return;
-        }
-        course.Init(coursename, point, (RESULT_TYPE)type);
-        CourseMap[course.GetID()] = course;
-        nowAccount->AddCourseIntoSet(course.GetID());
-        cout << " 课程创建成功!\n" << endl;
+        if (type == 0)return true;
     }
+    course.Init(coursename, point, (RESULT_TYPE)type);
+    CourseMap[course.GetID()] = course;
+    nowAccount->AddCourseIntoSet(course.GetID());
+    cout << " 课程创建成功!\n" << endl;
+    cout << ' '; system("pause");
+    return false;
 }
 
 //教师删除课程
 bool DelCourse() {
     IDTYPE id;
-    cout << " ┄┄┄┄┄┄┄┄┄┄┄删┄┄┄┄┄┄┄┄┄┄除┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     while (true) {
         cin.clear();
         cin.ignore(INT_MAX, '\n');
@@ -879,7 +953,80 @@ bool DelCourse() {
 }
 
 //课程成绩操作菜单
-void EnterCourseMenu() {
+void EnterCourseMenu(IDTYPE courseID) {
+    int N;
+    //初始化
+    system("cls");
+    ShowHead();
+    cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+    cout << "  当前课程ID:" << courseID << " "; CourseMap[courseID].Display(); cout << '\n';
+    cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄开┄┄┄┄┄┄┄┄┄┄设┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    //菜单循环
+    while (true) {
+        cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+        cout << "┃               1. 查看所有学生成绩                              ┃\n";
+        cout << "┃               2. 按序录入成绩                                  ┃\n";
+        cout << "┃               3. 修改成绩                                      ┃\n";
+        cout << "┃               4. 删除成绩                                      ┃\n";
+        cout << "┃               5. 文件导入                                      ┃\n";
+        cout << "┃               6. 成绩排序                                      ┃\n";
+        cout << "┃               0. 返回上一级                                    ┃\n";
+        cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+        //输入循环
+        do {
+            bool isBreak = false;
+            N = -1;
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cout << " 请输入所选菜单序号:";
+            cin >> N;
+            switch (N) {
+            case 1:
+                ShowAllStuInCourse();
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            case 5:
+
+                break;
+            case 6:
+
+                break;
+            case 0:
+                return;
+                break;
+            default:
+                cout << " 输入有误，请重新输入,";
+                break;
+            }
+        } while (N < 0 || N > 9 || (N > 6 && N < 9));
+    }
+}
+
+void ShowAllStuInCourse() {
+}
+
+void InputGrade() {
+}
+
+void ChangeGrade() {
+}
+
+void DelGrade() {
+}
+
+void InputGradeFile() {
+}
+
+void SortAndShow() {
 }
 
 //写二进制文件，保存全部信息
