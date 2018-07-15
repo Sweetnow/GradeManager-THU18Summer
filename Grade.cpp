@@ -5,8 +5,9 @@ Grade::Grade() {
 }
 
 Grade::Grade(Course& course, IDTYPE stuID) :
-    Course(course), m_iStuID(stuID), m_Result(0, course.GetCourseResultType()) {
+    Course(course), m_iStuID(stuID), m_Result(0, Result_None) {
     assert(Course::isInit && !ID::isInit);
+    assert(course.GetCourseResultType() != Result_None);
     SetID();
     ID::isInit = true;
     Course::m_setStudentID.clear();    //删除set中的信息
@@ -28,7 +29,7 @@ IDTYPE Grade::GetGradeID()const {
 }
 
 const std::pair<int, double> Grade::Result2Pair() const {
-    switch (m_eType) {
+    switch (m_Result.m_eType) {
     case Result_Percent:
         for (int i = 0; i < 12; i++) {
             if (m_Result.m_uResult.Percent < PERCENT_TO_GRADE[i] && m_Result.m_uResult.Percent >= PERCENT_TO_GRADE[i + 1]) {
@@ -51,11 +52,14 @@ const std::pair<int, double> Grade::Result2Pair() const {
     }
 }
 
+IDTYPE Grade::GetStuID() const {
+    return m_iStuID;
+}
+
 
 void Grade::SetGradeResult(RESULT result) {
     assert(Course::isInit && ID::isInit);
-    assert(result.m_eType == m_Result.m_eType);
-    m_Result.m_uResult = result.m_uResult;
+    m_Result = result;
 }
 
 void Grade::SetID() {
@@ -71,6 +75,7 @@ void Grade::Display()const {
     std::cout << "  成绩：";
     switch (m_Result.m_eType) {
     case Result_None:
+        std::cout << "未录入";
         break;
     case Result_Percent:
         std::cout << m_Result.m_uResult.Percent;
@@ -99,6 +104,25 @@ void Grade::Read(std::ifstream &file) {
     assert(file.is_open() && file.good());
     file.read((char*)&m_Result, sizeof(m_Result));
     file.read((char*)&m_iStuID, sizeof(m_iStuID));
+}
+
+void Grade::DisplayGradeOnly() const {
+    assert(Course::isInit && ID::isInit);
+    std::cout << "成绩：";
+    switch (m_Result.m_eType) {
+    case Result_None:
+        std::cout << "未录入";
+        break;
+    case Result_Percent:
+        std::cout << m_Result.m_uResult.Percent;
+        break;
+    case Result_Grade:
+        std::cout << RESULT_GRADE_TO_STR[m_Result.m_uResult.GPA];
+        break;
+    case Result_PF:
+        std::cout << (m_Result.m_uResult.isPass ? "通过" : "不通过");
+        break;
+    }
 }
 
 //方便计算Grade的ID

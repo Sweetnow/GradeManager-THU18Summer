@@ -5,6 +5,8 @@
 #include"Account.h"
 #pragma warning(disable:4584)    //关闭多继承带来的警告
 #define _GET_GRADE_ID(stuID,courseID) (((courseID) % 10000000) * 10000000 + stuID % 10000000)
+#define PASS (true)
+#define FAIL (false)
 
 const char* const RESULT_GRADE_TO_STR[12] =
 { "A+","A ","A-","B+","B ","B-","C+","C ","C-","D+","D ","F " };
@@ -52,6 +54,7 @@ public:
     RESULT GetGradeResult()const;
     IDTYPE GetGradeID()const;
     const std::pair<int, double> Result2Pair()const;
+    IDTYPE GetStuID()const;
     //set
     void SetGradeResult(RESULT);
     //接口
@@ -59,6 +62,8 @@ public:
     virtual void Display()const;
     virtual void Write(std::ofstream&)const;
     virtual void Read(std::ifstream&);
+    //只显示成绩
+    void DisplayGradeOnly()const;
 protected:
     RESULT m_Result;
     IDTYPE m_iStuID;
