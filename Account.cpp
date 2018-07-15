@@ -118,6 +118,7 @@ bool Account::CheckPwd(std::string RawPwd)const {
 bool Account::ChangePwd(std::string oldPwd, std::string newPwd) {
     assert(isInit);
     if (CheckPwd(oldPwd)) {    //如果原密码正确
+        isPwdSet = false;
         SetPwd(newPwd);
         return true;
     }
@@ -129,7 +130,7 @@ bool Account::ChangePwd(std::string oldPwd, std::string newPwd) {
 void Account::ResetPwd(std::string RawPwd, const Account & admin) {
     assert(isInit);
     assert(isPwdSet);
-    if (isPwdSet&&admin.GetAccountType() == Account_Administrator) {     //如果密码被设置过
+    if (isPwdSet && admin.GetAccountType() == Account_Administrator) {     //如果密码被设置过
         PWDTYPE salt = BKDRHash(m_sUserName);
         std::string Pwd = std::to_string(salt) + RawPwd;
         m_iPwd = BKDRHash(Pwd);
