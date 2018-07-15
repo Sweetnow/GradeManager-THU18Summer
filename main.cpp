@@ -8,7 +8,7 @@
 #include<stdio.h>
 #include<iomanip>
 
-#define _INIT 1
+#define _INIT 0
 
 using std::cout;
 using std::cin;
@@ -20,22 +20,35 @@ Account *nowAccount = nullptr;
 std::map<IDTYPE, Account>AccountMap;
 std::map<IDTYPE, Course>CourseMap;
 std::map<IDTYPE, Grade>GradeMap;
-
+//是否退出整个程序
 bool isExit = false;
 
 const char* FileName = "alldata.bin";
 const int WINDOWS_MAX_WIDTH = 80;
 const int WINDOWS_LEFT_WIDTH = 25;
 
-//menu
-void ShowHead(), EnterMainMenu(), EnterAccountMenu();
+//选择菜单
+void ShowHead(), EnterMainMenu(), EnterAdminMenu(), EnterStuMenu(), EnterTeaMenu();
 
-//module
-void Login();    //登陆
+//管理员菜单功能模块
+void CreateAccount();
+void DelAccount();
+void ResetAccountPwd();
+void ShowAllAccount();
+void ShowAllTeacher();
+void ShowAllStudent();
+void ShowAllCourse();
+void ChooseCourse();
+//学生菜单功能模块
 
-void CreateAccount(ACCOUNT_TYPE);
-void SaveFile(), LoadFile();    //文件操作
+//教师菜单功能模块
 void CreateCourse();
+
+
+
+//其他功能模块
+void Login();    //登陆
+void SaveFile(), LoadFile();    //文件操作
 void test();
 
 
@@ -48,101 +61,115 @@ int main() {
     LoadFile();
 #endif
     //登陆
-    Login();
-    if (isExit) {
-        SaveFile(); return 0;
+    while (!isExit) {
+        Login();
+        if (isExit) {
+            SaveFile();
+            return 0;
+        }
+        //主界面
+        EnterMainMenu();
     }
-    //主界面
-    EnterMainMenu();
-
 
     SaveFile();
-    system("pause");
     return 0;
 }
 
 void ShowHead() {
-    cout.fill('=');
-    cout << std::setw(WINDOWS_MAX_WIDTH) << "" << endl;
-    cout.fill('*');
-    cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "学生成绩管理系统V0.2(alpha)" << endl;
-    cout.fill('=');
-    cout << std::setw(WINDOWS_MAX_WIDTH) << "" << endl;
-    //恢复默认
-    cout.fill(' ');
-    cout << std::right;
+    cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+    cout << "┃                                                                ┃\n";
+    cout << "┃                   学生成绩管理系统 Version0.3                  ┃\n";
+    cout << "┃                                                                ┃\n";
+    cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+    return;
 }
 
-void EnterAccountMenu() {
+//管理员主菜单
+void EnterAdminMenu() {
+    int N;
+    //初始化
+    while (!isExit) {
+        system("cls");
+        ShowHead();
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+        cout << "     "; nowAccount->Display(); cout << '\n';
+        cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+        cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+        cout << "┃               1. 创建账户                                      ┃\n";
+        cout << "┃               2. 删除账户                                      ┃\n";
+        cout << "┃               3. 修改账户密码                                  ┃\n";
+        cout << "┃               4. 查看所有账户                                  ┃\n";
+        cout << "┃               5. 查看教师信息                                  ┃\n";
+        cout << "┃               6. 查看学生信息                                  ┃\n";
+        cout << "┃               7. 查看课程信息                                  ┃\n";
+        cout << "┃               8. 添加选课学生列表                              ┃\n";
+        cout << "┃               9. 退出登录(返回上一级)                          ┃\n";
+        cout << "┃               0. 退出程序                                      ┃\n";
+        cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+        cout << " 请输入所选菜单序号：";
+        cin >> N;
+        switch (N) {
+        case 1:
+            CreateAccount();
+            break;
+        case 2:
+            DelAccount();
+            break;
+        case 3:
+            ResetAccountPwd();
+            break;
+        case 4:
+            ShowAllAccount();
+            break;
+        case 5:
+            ShowAllTeacher();
+            break;
+        case 6:
+            ShowAllStudent();
+            break;
+        case 7:
+            ShowAllCourse();
+            break;
+        case 8:
+            ChooseCourse();
+            break;
+        case 9:
+            return;
+            break;
+        case 0:
+            isExit = true;
+            return;
+            break;
+        default:
+            cout << " 输入有误，请重新输入,";
+            break;
+        }
+    }
+}
+
+void EnterStuMenu() {
+
+}
+void EnterTeaMenu() {
 
 }
 
 void EnterMainMenu() {
-    int N;
-    //初始化
-    system("cls");
-    ShowHead();
-    cin.clear();
-    cin.sync();
-    nowAccount->Display();
-    //
+    //进入对应菜单
     switch (nowType) {
     case Account_None:
         assert(nowType != Account_None);
         break;
     case Account_Student:    //学生菜单
-
-
-
-
+        EnterStuMenu();
         break;
     case Account_Teacher:    //教师菜单
-        while (!isExit) {
-            cout.fill('*');
-            cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "1.创建课程" << std::right << endl;
-            cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "2.退出" << std::right << endl;
-            cout.fill('=');
-            cout << std::setw(WINDOWS_MAX_WIDTH) << "" << endl;
-            //恢复默认
-            cout.fill(' ');
-            switch (cin >> N, N) {
-            case 1:
-                CreateCourse();
-                break;
-            case 2:
-                isExit = true;
-                break;
-            }
-        }
+        EnterTeaMenu();
         break;
     case Account_Administrator:    //管理员菜单
-
-        while (!isExit) {
-            cout.fill('*');
-            cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "1.创建教师账户" << std::right << endl;
-            cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "2.创建学生账户" << std::right << endl;
-
-            cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "3.退出" << std::right << endl;
-            cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "test 0.为学生选课" << std::right << endl;
-            cout.fill('=');
-            cout << std::setw(WINDOWS_MAX_WIDTH) << "" << endl;
-            //恢复默认
-            cout.fill(' ');
-            switch (cin >> N, N) {
-            case 1:
-                CreateAccount(Account_Teacher);
-                break;
-            case 2:
-                CreateAccount(Account_Student);
-                break;
-            case 3:
-                isExit = true;
-                break;
-            case 0:
-                test();
-                break;
-            }
-        }
+        EnterAdminMenu();
         break;
     }
 }
@@ -155,22 +182,21 @@ void Login() {
     while (!isOK) {
         system("cls");
         ShowHead();
-        cout.fill('*');
-        cout << std::setw(WINDOWS_LEFT_WIDTH) << "" << std::left << std::setw(WINDOWS_MAX_WIDTH - WINDOWS_LEFT_WIDTH) << "登 陆 界 面" << std::right << endl;
-        cout << "请输入用户名:";
+        cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄登┄┄┄┄┄┄┄┄┄┄┄┄┄陆┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+        cout << " 请输入用户名:";
         cin >> username;
-        cout << "请输入密码:";
-        cin >> pwd;
         cin.clear();
-        cin.sync();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 请输入密码:";
+        cin >> pwd;
         //检查
         auto it = std::find_if(AccountMap.begin(), AccountMap.end(), [&](std::pair<IDTYPE, Account> account)->bool {return username == account.second.GetUserName(); });
         if (it == AccountMap.end()) {
             bool isInputCorrect = false;    //是否正确输入
             do {
-                cout << "用户名或密码输入错误！是否重新输入(Y/N)" << endl;
+                cout << " 用户名或密码输入错误！是否重新输入(Y/N):";
                 cin.clear();
-                cin.sync();
+                cin.ignore(INT_MAX, '\n');
                 cin >> ch;
                 switch (ch) {
                 case 'Y': case 'y':
@@ -187,7 +213,7 @@ void Login() {
             } while (!isInputCorrect);
         }
         else if (it->second.CheckPwd(pwd)) {
-            cout << "登陆成功!" << endl;
+            cout << " 登陆成功!" << endl;
             nowAccount = &(it->second);
             nowType = nowAccount->GetAccountType();
             isOK = true;
@@ -195,9 +221,9 @@ void Login() {
         else {
             bool isInputCorrect = false;    //是否正确输入
             do {
-                cout << "用户名或密码输入错误！是否重新输入(Y/N)" << endl;
+                cout << " 用户名或密码输入错误！是否重新输入(Y/N):";
                 cin.clear();
-                cin.sync();
+                cin.ignore(INT_MAX, '\n');
                 cin >> ch;
                 switch (ch) {
                 case 'Y': case 'y':
@@ -216,14 +242,146 @@ void Login() {
     }
 }
 
-void CreateAccount(ACCOUNT_TYPE type) {
-    assert(type == Account_Student || type == Account_Teacher);
+void CreateAccount() {
     Account account;
-    std::string username, pwd;
-    cout << "请输入账户名与初始密码：";
-    cin >> username >> pwd;
-    account.Init(username, pwd, type);
-    AccountMap[account.GetID()] = account;
+    std::string username, pwd, pwdChk;
+    int type;
+    //初始化
+    system("cls");
+    ShowHead();
+    //主循环
+    while (true) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 请输入要创建的账户类型(1-学生 2-教师 0-返回上一级):";
+        cin >> type;
+        if (type == 0)return;
+        while (type != 1 && type != 2) {
+            cout << " 输入有误，请重新输入(1-学生 2-教师):";
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cin >> type;
+        }
+        cout << " 请输入账户名(0-返回上一级):";
+        cin >> username;
+        if (username == "0")return;
+        do {
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cout << " 请输入初始密码:";
+            cin >> pwd;
+            cout << " 请再次输入初始密码:";
+            cin >> pwdChk;
+            if (pwdChk != pwd) {
+                cout << " 两次密码输入不一致！";
+            }
+        } while (pwdChk != pwd);
+        account.Init(username, pwd, (ACCOUNT_TYPE)type);
+        AccountMap[account.GetID()] = account;
+    }
+}
+void DelAccount() {
+    IDTYPE id;
+    //初始化
+    system("cls");
+    ShowHead();
+    //主循环
+    while (true) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 输入要删除的账户ID(输入0返回上一级):";
+        cin >> id;
+        if (id == 0) {
+            return;
+        }
+        if (AccountMap.find(id) == AccountMap.end()) {
+            cout << " 输入有误，请重新输入，";
+        }
+        else {
+            switch (AccountMap[id].GetAccountType()) {
+            case Account_Student:
+                if (!AccountMap[id].GetAccountCourseID().empty()) {
+                    for (auto it = AccountMap[id].GetAccountCourseID().begin(); it != AccountMap[id].GetAccountCourseID().end(); it++) {
+                        GradeMap.erase(GET_GRADE_ID(AccountMap[id].GetID(), *it));  //删除对应的成绩
+                        CourseMap[*it].DelStudentOutSet(AccountMap[id].GetID());   //删除课程中的记录
+                    }
+                }
+                AccountMap.erase(id);
+                cout << " 账户" << id << "已被删除" << endl;
+                break;
+            case Account_Teacher:
+                if (!AccountMap[id].GetAccountCourseID().empty()) {
+                    //删除开设的课程
+                    for (auto it = AccountMap[id].GetAccountCourseID().begin(); it != AccountMap[id].GetAccountCourseID().end(); it++) {
+                        //查找对应课程中的学生，删除Grade
+                        for (auto stu = CourseMap[*it].GetCourseStudentID().begin(); stu != CourseMap[*it].GetCourseStudentID().end(); stu++) {
+                            GradeMap.erase(GET_GRADE_ID(*stu, *it));  //删除对应的成绩
+                        }
+                        CourseMap.erase(*it);   //删除课程中的记录
+                    }
+                }
+                AccountMap.erase(id);
+                cout << " 账户" << id << "已被删除" << endl;
+                break;
+            case Account_Administrator:
+                cout << " 禁止删除管理员账户，请重新输入，";
+                break;
+            default:
+                assert(false);
+                break;
+            }
+        }
+    }
+}
+void ResetAccountPwd() {
+    IDTYPE id;
+    //初始化
+    system("cls");
+    ShowHead();
+    //主循环
+    while (true) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 输入要重置密码的账户ID(输入0返回上一级):";
+        cin >> id;
+        if (id == 0) {
+            return;
+        }
+        if (AccountMap.find(id) == AccountMap.end()) {
+            cout << " 输入有误，请重新输入，";
+        }
+        else {
+            std::string pwd, pwdChk;
+            do {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+                cout << " 请输入新密码:";
+                cin >> pwd;
+                cout << " 请再次输入新密码:";
+                cin >> pwdChk;
+                if (pwdChk != pwd) {
+                    cout << " 两次密码输入不一致！";
+                }
+            } while (pwdChk != pwd);
+            AccountMap[id].ResetPwd(pwd, *nowAccount);
+            cout << " 账户" << id << "密码修改成功" << endl;
+        }
+    }
+}
+void ShowAllAccount() {
+    //初始化
+    system("cls");
+    ShowHead();
+    cin.clear();
+    cin.ignore(INT_MAX, '\n');
+}
+void ShowAllTeacher() {
+}
+void ShowAllStudent() {
+}
+void ShowAllCourse() {
+}
+void ChooseCourse() {
 }
 void CreateCourse() {
     Course course;

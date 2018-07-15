@@ -17,12 +17,12 @@ Grade::~Grade() {
 }
 
 
-RESULT Grade::GetGradeResult() {
+RESULT Grade::GetGradeResult()const {
     assert(Course::isInit && ID::isInit);
     return m_Result;
 }
 
-IDTYPE Grade::GetGradeID() {
+IDTYPE Grade::GetGradeID()const {
     assert(Course::isInit && ID::isInit);
     return ID::m_iID;
 }
@@ -35,10 +35,13 @@ void Grade::SetGradeResult(RESULT result) {
 }
 
 void Grade::SetID() {
+    //debug
+    IDTYPE test = GET_GRADE_ID(m_iStuID, Course::m_iID);
     ID::m_iID = (Course::m_iID % 10000000) * 10000000 + m_iStuID % 10000000;
+    assert(test == ID::m_iID);
 }
 
-void Grade::Display() {
+void Grade::Display()const {
     assert(Course::isInit && ID::isInit);
     Course::Display();
     std::cout << "成绩类型:" << RESULT_TYPE_TO_STR[m_Result.m_eType] << "  成绩：";
@@ -58,7 +61,7 @@ void Grade::Display() {
     std::cout << std::endl;
 }
 
-void Grade::Write(std::ofstream &file) {
+void Grade::Write(std::ofstream &file)const {
     assert(Course::isInit && ID::isInit);
     ID::Write(file);
     Course::Write(file);

@@ -9,17 +9,17 @@ Account::Account() {
 Account::~Account() {
 }
 
-ACCOUNT_TYPE Account::GetAccountType() {
+ACCOUNT_TYPE Account::GetAccountType()const {
     assert(isInit);
     return m_eType;
 }
 
-std::string Account::GetUserName() {
+std::string Account::GetUserName()const {
     assert(isInit);
     return m_sUserName;
 }
 
-std::set<IDTYPE> Account::GetAccountCourseID() {
+std::set<IDTYPE>& Account::GetAccountCourseID() {
     assert(isInit);
     return m_setCourseID;
 }
@@ -37,12 +37,12 @@ void Account::SetID() {
     m_iID = ++sm_iLastID;
 }
 
-void Account::Display() {
+void Account::Display()const {
     assert(isInit);
-    std::cout << "账户名:" << m_sUserName << "  账户类型:" << ACCOUNT_TYPE_TO_STR[m_eType] << std::endl;
+    std::cout << "账户名:" << m_sUserName << "  账户类型:" << ACCOUNT_TYPE_TO_STR[m_eType];
 }
 
-void Account::Write(std::ofstream& file) {
+void Account::Write(std::ofstream& file)const {
     assert(isInit);
     ID::Write(file);
     assert(file.is_open() && file.good());
@@ -102,7 +102,7 @@ void Account::SetPwd(std::string RawPwd) {
     }
 }
 
-bool Account::CheckPwd(std::string RawPwd) {
+bool Account::CheckPwd(std::string RawPwd)const {
     assert(isInit);
     if (isPwdSet) {     //如果密码被设置过才允许检查
         PWDTYPE salt = BKDRHash(m_sUserName);
@@ -126,17 +126,28 @@ bool Account::ChangePwd(std::string oldPwd, std::string newPwd) {
     }
 }
 
+void Account::ResetPwd(std::string RawPwd, const Account & admin) {
+    assert(isInit);
+    assert(isPwdSet);
+    if (isPwdSet&&admin.GetAccountType()== Account_Administrator) {     //如果密码被设置过
+        PWDTYPE salt = BKDRHash(m_sUserName);
+        std::string Pwd = std::to_string(salt) + RawPwd;
+        m_iPwd = BKDRHash(Pwd);
+    }
+}
+
 void Account::SetAccountType(ACCOUNT_TYPE type) {
     assert(isInit);
     m_eType = type;
 }
+
 
 void Account::AddCourseIntoSet(IDTYPE courseID) {
     assert(isInit);
     m_setCourseID.insert(courseID);
 }
 
-bool Account::IsCourseInSet(IDTYPE courseID) {
+bool Account::IsCourseInSet(IDTYPE courseID)const {
     assert(isInit);
     return m_setCourseID.find(courseID) == m_setCourseID.end();
 }

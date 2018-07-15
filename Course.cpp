@@ -24,12 +24,12 @@ void Course::SetID() {
     m_iID = ++sm_iLastID;
 }
 
-void Course::Display() {
+void Course::Display()const {
     assert(isInit);
     std::cout << "课程名：" << m_sCourseName << "  学分：" << m_iPoint << "  成绩记录方式:" << RESULT_TYPE_TO_STR[m_eType] << std::endl;
 }
 
-void Course::Write(std::ofstream& file) {
+void Course::Write(std::ofstream& file)const {
     assert(isInit);
     ID::Write(file);
     assert(file.is_open() && file.good());
@@ -71,22 +71,22 @@ void Course::Read(std::ifstream& file) {
     }
 }
 
-std::string Course::GetCourseName() {
+std::string Course::GetCourseName()const {
     assert(isInit);
     return m_sCourseName;
 }
 
-int Course::GetCoursePoint() {
+int Course::GetCoursePoint()const {
     assert(isInit);
     return m_iPoint;
 }
 
-RESULT_TYPE Course::GetCourseResultType() {
+RESULT_TYPE Course::GetCourseResultType()const {
     assert(isInit);
     return m_eType;
 }
 
-std::set<IDTYPE> Course::GetCourseStudentID() {
+std::set<IDTYPE>& Course::GetCourseStudentID() {
     assert(isInit);
     return m_setStudentID;
 }
@@ -111,7 +111,7 @@ void Course::AddStudentIntoSet(IDTYPE StudentID) {
     m_setStudentID.insert(StudentID);
 }
 
-bool Course::IsStudentInSet(IDTYPE StudentID) {
+bool Course::IsStudentInSet(IDTYPE StudentID)const {
     assert(isInit);
     return std::find(m_setStudentID.begin(), m_setStudentID.end(), StudentID) != m_setStudentID.end();
 }

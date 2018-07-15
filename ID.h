@@ -10,11 +10,11 @@ public:
 
     //接口
     virtual void SetID() = 0;    //设置ID，需要在派生类的构造函数中被调用
-    virtual void Display() = 0;    //显示类
-    virtual void Write(std::ofstream&);    //写入二进制文件
+    virtual void Display()const = 0;    //显示类
+    virtual void Write(std::ofstream&)const;    //写入二进制文件
     virtual void Read(std::ifstream&);    //从二进制文件中读取
                                           //Get
-    IDTYPE GetID();
+    IDTYPE GetID()const;
 protected:
     IDTYPE m_iID;
     bool isInit = false;    //类是否被初始化过

@@ -3,6 +3,7 @@
 #include "ID.h"
 #include"Course.h" 
 #pragma warning(disable:4584)    //关闭多继承带来的警告
+#define GET_GRADE_ID(stuID,courseID) (((courseID) % 10000000) * 10000000 + stuID % 10000000)
 
 const char* const RESULT_GRADE_TO_STR[12] =
 { "A_PLUS","A","A_MINUS","B_PLUS","B","B_MINUS","C_PLUS","C","C_MINUS","D_PLUS","D","F" };
@@ -45,14 +46,14 @@ public:
     Grade(Course&, IDTYPE);
     virtual ~Grade();
     //Get
-    RESULT GetGradeResult();
-    IDTYPE GetGradeID();
+    RESULT GetGradeResult()const;
+    IDTYPE GetGradeID()const;
     //set
     void SetGradeResult(RESULT);
     //接口
     virtual void SetID();    //成绩类ID为 “课程类ID去掉首位后”+“学生类ID去掉首位”
-    virtual void Display();
-    virtual void Write(std::ofstream&);
+    virtual void Display()const;
+    virtual void Write(std::ofstream&)const;
     virtual void Read(std::ifstream&);
 protected:
     RESULT m_Result;

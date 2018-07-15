@@ -22,28 +22,28 @@ public:
     Account();
     virtual ~Account();
     //Get
-    ACCOUNT_TYPE GetAccountType();
-    std::string GetUserName();
-    std::set<IDTYPE> GetAccountCourseID();
+    ACCOUNT_TYPE GetAccountType()const;
+    std::string GetUserName()const;
+    std::set<IDTYPE>& GetAccountCourseID();
     //初始化，用户名 密码 账户类型
     void Init(std::string, std::string, ACCOUNT_TYPE);
     //基类接口实现
     virtual void SetID();
-    virtual void Display();
-    virtual void Write(std::ofstream&);
+    virtual void Display()const;
+    virtual void Write(std::ofstream&)const;
     virtual void Read(std::ifstream&);
     //用户名相关
     void SetUserName(std::string);
     //密码相关
     void SetPwd(std::string);
-    bool CheckPwd(std::string);
+    bool CheckPwd(std::string)const;
     bool ChangePwd(std::string, std::string);
+    void ResetPwd(std::string, const Account& admin);
     //账户种类相关
     void SetAccountType(ACCOUNT_TYPE);
-    //CourseID相关
-    //StudentID相关
+
     void AddCourseIntoSet(IDTYPE);
-    bool IsCourseInSet(IDTYPE);
+    bool IsCourseInSet(IDTYPE)const;
     void DelCourseOutSet(IDTYPE);
     //ID设置相关
     static IDTYPE sm_iLastID;    //上一个使用的ID

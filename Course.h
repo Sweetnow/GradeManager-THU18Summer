@@ -21,14 +21,14 @@ public:
     void Init(std::string, int, RESULT_TYPE);
     //基类接口实现
     virtual void SetID();
-    virtual void Display();
-    virtual void Write(std::ofstream&);
+    virtual void Display()const;
+    virtual void Write(std::ofstream&)const;
     virtual void Read(std::ifstream&);
     //Get
-    std::string GetCourseName();
-    int GetCoursePoint();
-    RESULT_TYPE GetCourseResultType();
-    std::set<IDTYPE> GetCourseStudentID();
+    std::string GetCourseName()const;
+    int GetCoursePoint()const;
+    RESULT_TYPE GetCourseResultType()const;
+    std::set<IDTYPE>& GetCourseStudentID();
 
     //set
     void SetCourseName(std::string);
@@ -37,9 +37,8 @@ public:
 
     //StudentID相关
     void AddStudentIntoSet(IDTYPE);
-    bool IsStudentInSet(IDTYPE);
+    bool IsStudentInSet(IDTYPE)const;
     void DelStudentOutSet(IDTYPE);
-
     //ID设置相关
     static IDTYPE sm_iLastID;    //上一个使用的ID
 protected:
