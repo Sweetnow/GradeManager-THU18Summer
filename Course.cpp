@@ -26,7 +26,7 @@ void Course::SetID() {
 
 void Course::Display()const {
     assert(isInit);
-    std::cout << "课程名：" << m_sCourseName << "  学分：" << m_iPoint << "  成绩记录方式:" << RESULT_TYPE_TO_STR[m_eType] << std::endl;
+    std::cout << "课程名：" << std::setw(10) << std::left << m_sCourseName << std::right << "  学分：" << m_iPoint << "  成绩记录方式:" << RESULT_TYPE_TO_STR[m_eType] << std::endl;
 }
 
 void Course::Write(std::ofstream& file)const {

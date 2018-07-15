@@ -39,7 +39,7 @@ void Account::SetID() {
 
 void Account::Display()const {
     assert(isInit);
-    std::cout << "账户名:" << m_sUserName << "  账户类型:" << ACCOUNT_TYPE_TO_STR[m_eType];
+    std::cout << "账户名:" << std::setw(10) << std::left << m_sUserName << std::right << "  账户类型:" << ACCOUNT_TYPE_TO_STR[m_eType];
 }
 
 void Account::Write(std::ofstream& file)const {
@@ -129,7 +129,7 @@ bool Account::ChangePwd(std::string oldPwd, std::string newPwd) {
 void Account::ResetPwd(std::string RawPwd, const Account & admin) {
     assert(isInit);
     assert(isPwdSet);
-    if (isPwdSet&&admin.GetAccountType()== Account_Administrator) {     //如果密码被设置过
+    if (isPwdSet&&admin.GetAccountType() == Account_Administrator) {     //如果密码被设置过
         PWDTYPE salt = BKDRHash(m_sUserName);
         std::string Pwd = std::to_string(salt) + RawPwd;
         m_iPwd = BKDRHash(Pwd);

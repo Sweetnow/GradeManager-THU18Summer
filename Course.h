@@ -2,6 +2,7 @@
 #include "ID.h"
 #include<string>
 #include<iostream>
+#include<iomanip>
 #include<set>
 #include<algorithm>
 const char* const RESULT_TYPE_TO_STR[4] = { "未设置","百分制","等级制","P/F", };

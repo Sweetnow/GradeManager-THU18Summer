@@ -372,14 +372,65 @@ void ShowAllAccount() {
     //初始化
     system("cls");
     ShowHead();
-    cin.clear();
-    cin.ignore(INT_MAX, '\n');
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄所┄┄┄┄┄┄┄┄┄┄有┄┄┄┄┄┄┄┄┄┄┄┄帐┄┄┄┄┄┄┄┄┄┄┄户┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    //主循环
+    for (auto it = AccountMap.begin(); it != AccountMap.end(); it++) {
+        cout << " 账户ID " << it->first << "  ";
+        it->second.Display();
+        cout << endl;
+    }
+    cout << "\n 查看详细信息请转到 《查看教师/学生信息》 菜单\n" << endl;
+    cout << ' ';
+    system("pause");
 }
 void ShowAllTeacher() {
+    //初始化
+    system("cls");
+    ShowHead();
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄教┄┄┄┄┄┄┄┄┄┄师┄┄┄┄┄┄┄┄┄┄┄┄帐┄┄┄┄┄┄┄┄┄┄┄户┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    //显示基本信息
+    for (auto it = AccountMap.begin(); it != AccountMap.end(); it++) {
+        if (it->second.GetAccountType() == Account_Teacher) {
+            cout << " 账户ID " << it->first << "  ";
+            it->second.Display();
+            cout << endl;
+        }
+    }
+    while (true) {
+        //查看详细信息
+    }
 }
 void ShowAllStudent() {
+    //初始化
+    system("cls");
+    ShowHead();
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄学┄┄┄┄┄┄┄┄┄┄生┄┄┄┄┄┄┄┄┄┄┄┄帐┄┄┄┄┄┄┄┄┄┄┄户┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    //显示基本信息
+    for (auto it = AccountMap.begin(); it != AccountMap.end(); it++) {
+        if (it->second.GetAccountType() == Account_Teacher) {
+            cout << " 账户ID " << it->first << "  ";
+            it->second.Display();
+            cout << endl;
+        }
+    }
+    while (true) {
+        //查看详细信息
+    }
 }
 void ShowAllCourse() {
+    //初始化
+    system("cls");
+    ShowHead();
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄所┄┄┄┄┄┄┄┄┄┄有┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    //显示基本信息
+    for (auto it = CourseMap.begin(); it != CourseMap.end(); it++) {
+        cout << " 课程ID " << it->first << "  ";
+        it->second.Display();
+        cout << endl;
+    }
+    while (true) {
+        //查看详细信息
+    }
 }
 void ChooseCourse() {
 }
