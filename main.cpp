@@ -7,6 +7,7 @@
 #include"Grade.h"
 #include<stdio.h>
 #include<iomanip>
+#include<vector>
 
 #define _INIT 0
 
@@ -35,19 +36,20 @@ void CreateAccount();
 void DelAccount();
 void ResetAccountPwd();
 void ShowAllAccount();
+//没搞定
 void ShowAllTeacher();
 bool ShowOneTeacher();
+//
 void ShowAllStudent();
 bool ShowOneStudent();
 void ShowAllCourse();
 void ShowAllCourse(Account&);
 bool ShowOneCourse();
 bool ShowOneCourse(Account&);
-void ChooseCourseMenu();
 
 //选课模块
 
-void ChooseCourseOne();
+void ChooseCourse();
 void ChooseCourseFile();
 
 //学生菜单功能模块
@@ -59,13 +61,15 @@ void ShowStuGrade(Account&);
 bool CreateCourse();
 bool DelCourse();
 void EnterCourseMenu(IDTYPE);
+
 //课程菜单功能模块
+
 void ShowAllStuInCourse(IDTYPE);
 void InputGrade(IDTYPE);
 bool InputOneGrade(Grade&);
+
 void ChangeGrade(IDTYPE);
 void DelGrade(IDTYPE);
-void InputGradeFile(IDTYPE);
 void SortAndShow(IDTYPE);
 
 //其他功能模块
@@ -171,7 +175,7 @@ void EnterAdminMenu() {
                 }
                 break;
             case 8:
-                ChooseCourseMenu();
+                ChooseCourse();
                 break;
             case 9:
                 nowType = Account_None;
@@ -392,13 +396,13 @@ void Login() {
 //创建账户
 void CreateAccount() {
     std::string username, pwd, pwdChk;
-    int type;
     //初始化
     system("cls");
     ShowHead();
     cout << " ┄┄┄┄┄┄┄┄┄┄┄创┄┄┄┄┄┄┄┄┄┄建┄┄┄┄┄┄┄┄┄┄┄┄帐┄┄┄┄┄┄┄┄┄┄┄户┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     //主循环
     while (true) {
+        int type;
         bool sameName;
         Account account;
         cin.clear();
@@ -634,7 +638,7 @@ void ShowAllStudent() {
     //显示基本信息
     for (auto it = AccountMap.begin(); it != AccountMap.end(); it++) {
         if (it->second.GetAccountType() == Account_Student) {
-            cout << " 账户ID " << it->first << "  ";
+            cout << " 账户ID:" << it->first << "  ";
             it->second.Display();
             cout << endl;
         }
@@ -742,55 +746,15 @@ bool ShowOneCourse(Account& tea) {
     return false;
 }
 
-//为学生选课菜单
-void ChooseCourseMenu() {
-    int N;
-    //菜单循环
-    while (true) {
-        bool isInputError;
-        system("cls");
-        ShowHead();
-        cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄选┄┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
-        cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
-        cout << "┃               1. 手动添加                                      ┃\n";
-        cout << "┃               2. 文件导入                                      ┃\n";
-        cout << "┃               0. 返回上一级                                    ┃\n";
-        cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
-        //输入循环
-        do {
-            isInputError = false;
-            N = -1;
-            cin.clear();
-            cin.ignore(INT_MAX, '\n');
-            cout << " 请输入所选菜单序号:";
-            cin >> N;
-            switch (N) {
-            case 1:
-                ChooseCourseOne();
-                break;
-            case 2:
-                ChooseCourseFile();
-                break;
-            case 0:
-                return;
-                break;
-            default:
-                isInputError = true;
-                cout << " 输入有误，请重新输入,";
-                break;
-            }
-        } while (isInputError);
-    }
-}
-
-//手动为学生选课界面与逻辑(逐一添加)
-void ChooseCourseOne() {
+//为学生选课(逐一添加)
+void ChooseCourse() {
     //主循环
     while (true) {
         //确定学生
         bool isStuSelect = false, isCourseSelect = false;
         IDTYPE StuID, CourseID;
         ShowAllStudent();
+        cout << " ┄┄┄┄┄┄┄┄┄┄┄开┄┄┄┄┄┄┄┄┄┄始┄┄┄┄┄┄┄┄┄┄┄┄选┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
         cout << " 请输入你要选择的学生ID(0-返回上一级):";
         cin.clear();
         cin.ignore(INT_MAX, '\n');
@@ -809,8 +773,8 @@ void ChooseCourseOne() {
         while (!isBreak) {
             //初始化
             system("cls");
-            ShowHead();
-            cout << " ┄┄┄┄┄┄┄┄┄┄┄可┄┄┄┄┄┄┄┄┄┄选┄┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+
+            cout << " ┄┄┄┄┄┄┄┄┄┄┄开┄┄┄┄┄┄┄┄┄┄始┄┄┄┄┄┄┄┄┄┄┄┄选┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
             //显示基本信息
             for (auto it = CourseMap.begin(); it != CourseMap.end(); it++) {
                 if (!nowStu->IsCourseInSet(it->first)) {
@@ -823,8 +787,17 @@ void ChooseCourseOne() {
             cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
             cout << "  当前选中学生ID:" << StuID << "  账户名:" << nowStu->GetUserName() << '\n';
             cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
-            do {
-                cout << " 请输入你要选择的课程ID(0-返回上一级):";
+
+            cout << " 请输入你要选择的课程ID(0-返回上一级):";
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cin >> CourseID;
+            if (CourseID == 0) {
+                isBreak = true;
+                break;
+            }
+            while (CourseMap.find(CourseID) == CourseMap.end()) {
+                cout << " 输入有误，请重新输入你要选择的课程ID(0-返回上一级):";
                 cin.clear();
                 cin.ignore(INT_MAX, '\n');
                 cin >> CourseID;
@@ -832,24 +805,15 @@ void ChooseCourseOne() {
                     isBreak = true;
                     break;
                 }
-                while (CourseMap.find(CourseID) == CourseMap.end()) {
-                    cout << " 输入有误，请重新输入你要选择的课程ID(0-返回上一级):";
-                    cin.clear();
-                    cin.ignore(INT_MAX, '\n');
-                    cin >> CourseID;
-                    if (CourseID == 0) {
-                        isBreak = true;
-                        break;
-                    }
-                }
-                if (isBreak)break;
-                auto *nowCourse = &CourseMap[CourseID];
-                nowStu->AddCourseIntoSet(CourseID);
-                nowCourse->AddStudentIntoSet(StuID);
-                Grade grade(*nowCourse, StuID);
-                GradeMap[grade.GetGradeID()] = grade;
-                cout << " 选课成功\n" << endl;
-            } while (!isBreak);
+            }
+            if (isBreak)break;
+            auto *nowCourse = &CourseMap[CourseID];
+            nowStu->AddCourseIntoSet(CourseID);
+            nowCourse->AddStudentIntoSet(StuID);
+            Grade grade(*nowCourse, StuID);
+            GradeMap[grade.GetGradeID()] = grade;
+            cout << " 选课成功\n" << endl;
+            cout << ' '; system("pause");
         }
     }
 }
@@ -1004,9 +968,6 @@ void EnterCourseMenu(IDTYPE courseID) {
                 DelGrade(courseID);
                 break;
             case 5:
-                InputGradeFile(courseID);
-                break;
-            case 6:
                 SortAndShow(courseID);
                 break;
             case 0:
@@ -1016,7 +977,7 @@ void EnterCourseMenu(IDTYPE courseID) {
                 cout << " 输入有误，请重新输入,";
                 break;
             }
-        } while (N < 0 || N > 9 || (N > 6 && N < 9));
+        } while (N < 0 || N > 9 || (N > 5 && N < 9));
     }
 }
 
@@ -1120,6 +1081,7 @@ bool InputOneGrade(Grade & grade) {
         char ch;
         bool isInputCorrect = false;    //是否正确输入
         isInput = false;
+        cout << ' ';
         grade.DisplayGradeOnly();
         do {
             cout << " 该学生已经录入过成绩，是否重新录入(Y/N):";
@@ -1172,7 +1134,7 @@ bool InputOneGrade(Grade & grade) {
                 if (GRADE == -1)return true;
                 if (GRADE >= 0 && GRADE < 12) {
                     isInputCorrect = true;
-                    grade.SetGradeResult(RESULT(GRADE, Result_Percent));
+                    grade.SetGradeResult(RESULT(GRADE, Result_Grade));
                 }
                 else {
                     cout << " 输入有误，请重新输入，";
@@ -1204,28 +1166,177 @@ bool InputOneGrade(Grade & grade) {
             } while (!isInputCorrect);
             break;
         }
+        cout << " 录入成功!\n" << endl;
     }
-    cout << " 录入成功!\n" << endl;
     cout << ' '; system("pause");
     return false;
 }
 
 //修改某一学生成绩
 void ChangeGrade(IDTYPE courseID) {
+    while (true) {
+        system("cls");
+        cout << " ┄┄┄┄┄┄┄┄┄┄┄修┄┄┄┄┄┄┄┄┄┄改┄┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+        cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+        cout << "  当前课程ID:" << courseID << " "; CourseMap[courseID].Display(); cout << '\n';
+        cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+        cout << " ┄┄┄┄┄┄┄┄┄┄┄选┄┄┄┄┄┄┄┄┄┄择┄┄┄┄┄┄┄┄┄┄┄┄学┄┄┄┄┄┄┄┄┄┄┄生┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+        //选择学生
+        for (auto it = CourseMap[courseID].GetCourseStudentID().begin(); it != CourseMap[courseID].GetCourseStudentID().end(); it++) {
+            cout << " 学生ID：" << *it << "  ";
+            AccountMap[*it].Display();
+            cout << endl;
+        }
+        cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+        IDTYPE stuID;
+        while (true) {
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cout << " 输入要选择的学生账户ID(0-返回上一级):";
+            cin >> stuID;
+            if (stuID == 0) {
+                return;
+            }
+            if (AccountMap.find(stuID) == AccountMap.end() || AccountMap[stuID].GetAccountType() != Account_Student || !CourseMap[courseID].IsStudentInSet(stuID)) {
+                cout << " 输入有误，请重新输入，";
+            }
+            else {
+                //进入修改
+                system("cls");
+                cout << " ┄┄┄┄┄┄┄┄┄┄┄修┄┄┄┄┄┄┄┄┄┄改┄┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+                cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+                cout << "  当前课程ID:" << courseID << " "; CourseMap[courseID].Display(); cout << '\n';
+                cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+                IDTYPE gradeID = _GET_GRADE_ID(stuID, courseID);
+                if (GradeMap.find(gradeID) == GradeMap.end()) {    //如果没有保存成绩的类，就创建之
+                    Grade grade(CourseMap[courseID], stuID);
+                    GradeMap[gradeID] = grade;
+                }
+                Grade& grade = GradeMap[gradeID];
+                InputOneGrade(grade);
+                break;
+            }
+        }
+    }
+}
+
+//删除/清空学生成绩
+void DelGrade(IDTYPE courseID) {
+    while (true) {
+        //初始化
+        system("cls");
+        ShowHead();
+        cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+        cout << "  当前课程ID:" << courseID << " "; CourseMap[courseID].Display(); cout << '\n';
+        cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
+        cout << " ┄┄┄┄┄┄┄┄┄┄┄删┄┄┄┄┄┄┄┄┄┄除┄┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+        //按序号排列学生
+        for (auto it = CourseMap[courseID].GetCourseStudentID().begin(); it != CourseMap[courseID].GetCourseStudentID().end(); it++) {
+            IDTYPE gradeID = _GET_GRADE_ID(*it, courseID);
+            if (GradeMap.find(gradeID) == GradeMap.end()) {    //如果没有保存成绩的类，就创建之
+                Grade grade(CourseMap[courseID], *it);
+                GradeMap[gradeID] = grade;
+            }
+            const Grade& grade = GradeMap[gradeID];
+            cout << " 学生ID:" << *it << "  账户名:" << std::setw(10) << std::left << AccountMap[*it].GetUserName() << std::right;
+            cout << ' '; grade.DisplayGradeOnly(); cout << endl;
+        }
+        cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+        IDTYPE stuID;
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 输入要选择的学生账户ID(0-返回上一级):";
+        cin >> stuID;
+        if (stuID == 0) {
+            return;
+        }
+        while (AccountMap.find(stuID) == AccountMap.end() || AccountMap[stuID].GetAccountType() != Account_Student || !CourseMap[courseID].IsStudentInSet(stuID)) {
+            cout << " 输入有误，请重新输入，输入要选择的学生账户ID(0-返回上一级):";
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cin >> stuID;
+            if (stuID == 0) {
+                return;
+            }
+        }
+        //删除成绩
+        GradeMap.erase(_GET_GRADE_ID(stuID, courseID));
+        cout << " 删除成功!\n" << endl;
+        cout << ' '; system("pause");
+    }
+}
+
+//将课程中所有学生成绩降序排列，其中未录入的排在最后
+void SortAndShow(IDTYPE courseID) {
+    std::set<Grade,std::greater<const Grade&>>sorted;
+    for (auto it = CourseMap[courseID].GetCourseStudentID().begin(); it != CourseMap[courseID].GetCourseStudentID().end(); it++) {
+        IDTYPE gradeID = _GET_GRADE_ID(*it, courseID);
+        if (GradeMap.find(gradeID) == GradeMap.end()) {    //如果没有保存成绩的类，就创建之
+            Grade grade(CourseMap[courseID], *it);
+            GradeMap[gradeID] = grade;
+        }
+        sorted.insert(GradeMap[gradeID]);
+    }
+    double sumResult = 0;
+    int count = 0;
+    double maxResult = -1;
+    double minResult = INT_MAX;
+    bool hasGrade[12] = { false,false,false,false,false,false,false,false,false,false,false,false };
+    //初始化
     system("cls");
-    cout << " ┄┄┄┄┄┄┄┄┄┄┄修┄┄┄┄┄┄┄┄┄┄改┄┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    ShowHead();
     cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
     cout << "  当前课程ID:" << courseID << " "; CourseMap[courseID].Display(); cout << '\n';
     cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
-}
-
-void DelGrade(IDTYPE courseID) {
-}
-
-void InputGradeFile(IDTYPE courseID) {
-}
-
-void SortAndShow(IDTYPE courseID) {
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄降┄┄┄┄┄┄┄┄┄┄┄序┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    //按序号排列学生
+    for (auto it = sorted.begin(); it != sorted.end(); it++) {
+        
+        const Grade& grade = *it;
+        cout << " 学生ID:" << it->GetStuID() << "  账户名:" << std::setw(10) << std::left << AccountMap[it->GetStuID()].GetUserName() << std::right;
+        cout << ' '; grade.DisplayGradeOnly(); cout << endl;
+        assert(grade.GetGradeResult().m_eType == Result_None || CourseMap[courseID].GetCourseResultType() == grade.GetGradeResult().m_eType);
+        switch (CourseMap[courseID].GetCourseResultType()) {
+        case Result_None:
+            break;
+        case Result_Percent:
+            if (grade.GetGradeResult().m_eType == Result_Percent) {
+                sumResult += grade.GetGradeResult().m_uResult.Percent;
+                count++;
+                maxResult = (grade.GetGradeResult().m_uResult.Percent > maxResult ? grade.GetGradeResult().m_uResult.Percent : maxResult);
+                minResult = (grade.GetGradeResult().m_uResult.Percent < minResult ? grade.GetGradeResult().m_uResult.Percent : minResult);
+            }
+            break;
+        case Result_Grade:
+            if (grade.GetGradeResult().m_eType == Result_Grade) {
+                sumResult += GRADE_TO_GPA[grade.GetGradeResult().m_uResult.GPA];
+                count++;
+                hasGrade[grade.GetGradeResult().m_uResult.GPA] = true;
+            }
+            break;
+        case Result_PF:
+            break;
+        }
+    }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    if (count > 0) {    //有已录入的学生
+        if (CourseMap[courseID].GetCourseResultType() == Result_Percent) {    //百分制
+            cout << " 平均分:" << sumResult / count << "  最高分:" << maxResult << "  最低分:" << minResult << endl;
+        }
+        else if (CourseMap[courseID].GetCourseResultType() == Result_Grade) {
+            int maxGrade = -1, minGrade = 12;
+            for (int i = 0; i < 12; i++) {
+                if (hasGrade[i])
+                    maxGrade = i;
+            }
+            for (int i = 12 - 1; i >= 0; i--) {
+                if (hasGrade[i])
+                    minGrade = i;
+            }
+            cout << " 平均绩点:" << sumResult / count << "  最高绩点:" << GRADE_TO_GPA[maxGrade] << "  最低绩点:" << GRADE_TO_GPA[minGrade] << endl;
+        }
+    }
+    cout << "\n "; system("pause");
 }
 
 //写二进制文件，保存全部信息

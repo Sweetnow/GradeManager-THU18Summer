@@ -64,6 +64,7 @@ public:
     virtual void Read(std::ifstream&);
     //Ö»ÏÔÊ¾³É¼¨
     void DisplayGradeOnly()const;
+    friend bool operator>(const Grade&, const Grade&);
 protected:
     RESULT m_Result;
     IDTYPE m_iStuID;
@@ -79,3 +80,4 @@ IDTYPE operator+(const Account& stu, IDTYPE courseID);
 IDTYPE operator+(const Course& course, IDTYPE stuID);
 IDTYPE operator+(IDTYPE stuID, const Course& course);
 
+bool operator>(const Grade& left, const Grade& right);

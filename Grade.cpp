@@ -149,3 +149,26 @@ IDTYPE operator+(IDTYPE stuID, const Course& course) {
     return course + stuID;
 }
 
+bool operator>(const Grade& left, const Grade& right) {
+    assert(left.m_Result.m_eType == right.m_Result.m_eType || left.m_Result.m_eType == Result_None || right.m_Result.m_eType == Result_None);
+    if (left.m_Result.m_eType == Result_None && right.m_Result.m_eType == Result_None)
+        return left.m_iStuID < right.m_iStuID;
+    else if (left.m_Result.m_eType == Result_None)
+        return false;
+    else if (right.m_Result.m_eType == Result_None)
+        return true;
+    else {
+        switch (left.m_Result.m_eType) {
+        case Result_Percent:
+            return left.m_Result.m_uResult.Percent > right.m_Result.m_uResult.Percent || (left.m_Result.m_uResult.Percent == right.m_Result.m_uResult.Percent && left.m_iStuID < right.m_iStuID);
+            break;
+        case Result_Grade:
+            return left.m_Result.m_uResult.Percent < right.m_Result.m_uResult.Percent || (left.m_Result.m_uResult.Percent == right.m_Result.m_uResult.Percent && left.m_iStuID < right.m_iStuID);
+            break;
+        case Result_PF:
+            return left.m_Result.m_uResult.isPass > right.m_Result.m_uResult.isPass || (left.m_Result.m_uResult.Percent == right.m_Result.m_uResult.Percent && left.m_iStuID < right.m_iStuID);
+            break;
+        }
+    }
+    return false;
+}
