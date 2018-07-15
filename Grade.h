@@ -2,14 +2,16 @@
 #include<iostream>
 #include "ID.h"
 #include"Course.h" 
+#include"Account.h"
 #pragma warning(disable:4584)    //关闭多继承带来的警告
-#define GET_GRADE_ID(stuID,courseID) (((courseID) % 10000000) * 10000000 + stuID % 10000000)
+#define _GET_GRADE_ID(stuID,courseID) (((courseID) % 10000000) * 10000000 + stuID % 10000000)
 
 const char* const RESULT_GRADE_TO_STR[12] =
-{ "A_PLUS","A","A_MINUS","B_PLUS","B","B_MINUS","C_PLUS","C","C_MINUS","D_PLUS","D","F" };
+{ "A+","A ","A-","B+","B ","B-","C+","C ","C-","D+","D ","F " };
 const double GRADE_TO_GPA[12] =
 { 4.0,  4.0,  3.7,      3.3,   3.0,   2.7,      2.3,  2.0,    1.7,      1.3,  1,  0 };
-
+const int PERCENT_TO_GRADE[13] =
+{ 101,100,95,90,85,80,77,73,70,67,63,60,-1 };
 enum RESULT_GRAGE {
     A_PLUS,
     A,
@@ -39,6 +41,7 @@ struct RESULT {
     }
 };
 
+
 class Grade :
     public ID, public Course {
 public:
@@ -48,6 +51,7 @@ public:
     //Get
     RESULT GetGradeResult()const;
     IDTYPE GetGradeID()const;
+    const std::pair<int, double> Result2Pair()const;
     //set
     void SetGradeResult(RESULT);
     //接口
@@ -59,4 +63,14 @@ protected:
     RESULT m_Result;
     IDTYPE m_iStuID;
 };
+
+//方便计算Grade的ID
+//class+class
+IDTYPE operator+(const Course& course, const Account& stu);
+IDTYPE operator+(const Account& stu, const Course& course);
+//class+ID
+IDTYPE operator+(IDTYPE courseID, const Account& stu);
+IDTYPE operator+(const Account& stu, IDTYPE courseID);
+IDTYPE operator+(const Course& course, IDTYPE stuID);
+IDTYPE operator+(IDTYPE stuID, const Course& course);
 

@@ -38,7 +38,7 @@ void ShowAllAccount();
 void ShowAllTeacher();
 void ShowOneTeacher();
 void ShowAllStudent();
-void ShowOneStudent();
+bool ShowOneStudent();
 void ShowAllCourse();
 void ShowOneCourse();
 void ChooseCourseMenu();
@@ -46,7 +46,7 @@ void ChooseCourseMenu();
 void ChooseCourseOne();
 void ChooseCourseFile();
 //学生菜单功能模块
-void ShowStuGrade();
+void ShowStuGrade(Account&);
 //教师菜单功能模块
 void CreateCourse();
 
@@ -113,6 +113,7 @@ void EnterAdminMenu() {
         cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
         //输入循环
         do {
+            bool isBreak = false;
             N = -1;
             cin.clear();
             cin.ignore(INT_MAX, '\n');
@@ -139,8 +140,10 @@ void EnterAdminMenu() {
                 ShowOneTeacher();
                 break;
             case 6:
-                ShowAllStudent();
-                ShowOneStudent();
+                while (!isBreak) {
+                    ShowAllStudent();
+                    isBreak = ShowOneStudent();
+                }
                 break;
             case 7:
                 ShowAllCourse();
@@ -193,7 +196,7 @@ void EnterStuMenu() {
                 ResetAccountPwd();
                 break;
             case 2:
-                ShowStuGrade();
+                ShowStuGrade(*nowAccount);
                 break;
             case 9:
                 nowType = Account_None;
@@ -367,7 +370,7 @@ void DelAccount() {
             case Account_Student:
                 if (!AccountMap[id].GetAccountCourseID().empty()) {
                     for (auto it = AccountMap[id].GetAccountCourseID().begin(); it != AccountMap[id].GetAccountCourseID().end(); it++) {
-                        GradeMap.erase(GET_GRADE_ID(AccountMap[id].GetID(), *it));  //删除对应的成绩
+                        GradeMap.erase(AccountMap[id] + *it);  //删除对应的成绩
                         CourseMap[*it].DelStudentOutSet(AccountMap[id].GetID());   //删除课程中的记录
                     }
                 }
@@ -380,7 +383,7 @@ void DelAccount() {
                     for (auto it = AccountMap[id].GetAccountCourseID().begin(); it != AccountMap[id].GetAccountCourseID().end(); it++) {
                         //查找对应课程中的学生，删除Grade
                         for (auto stu = CourseMap[*it].GetCourseStudentID().begin(); stu != CourseMap[*it].GetCourseStudentID().end(); stu++) {
-                            GradeMap.erase(GET_GRADE_ID(*stu, *it));  //删除对应的成绩
+                            GradeMap.erase(_GET_GRADE_ID(*stu, *it));  //删除对应的成绩
                         }
                         CourseMap.erase(*it);   //删除课程中的记录
                     }
@@ -514,7 +517,25 @@ void ShowAllStudent() {
         }
     }
 }
-void ShowOneStudent() {
+bool ShowOneStudent() {
+    IDTYPE id;
+    while (true) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 输入要查看的学生账户ID(输入0返回上一级):";
+        cin >> id;
+        if (id == 0) {
+            return true;
+        }
+        if (AccountMap.find(id) == AccountMap.end() || AccountMap[id].GetAccountType() != Account_Student) {
+            cout << " 输入有误，请重新输入，";
+        }
+        else {
+            ShowStuGrade(AccountMap[id]);
+            break;
+        }
+    }
+    return false;
 }
 void ShowAllCourse() {
     //初始化
@@ -625,12 +646,29 @@ void ChooseCourseOne() {
 }
 void ChooseCourseFile() {
 }
-void ShowStuGrade() {
+void ShowStuGrade(Account& stu) {
+    assert(stu.GetAccountType() == Account_Student);
+    double sumResult = 0;    //统一转换为绩点处理
+    int allPoint = 0;    //总学分
     //初始化
     system("cls");
     ShowHead();
+    cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+    cout << "  当前学生ID:" << stu.GetID() << "  账户名:" << stu.GetUserName() << '\n';
+    cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
     cout << " ┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
-
+    for (auto it = stu.GetAccountCourseID().begin(); it != stu.GetAccountCourseID().end(); it++) {
+        assert(GradeMap.find(*it + stu) != GradeMap.end());
+        const Grade& grade = GradeMap[*it + stu];
+        cout << ' '; grade.Display(); cout << endl;
+        sumResult += grade.Result2Pair().second * grade.Result2Pair().first;
+        allPoint += grade.Result2Pair().first;
+    }
+    if (allPoint == 0)
+        cout << " 平均绩点为: NaN" << endl;
+    else
+        cout << " 平均绩点为:" << sumResult / allPoint << endl;
+    cout << "\n "; system("pause");
 }
 void CreateCourse() {
     Course course;
