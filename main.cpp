@@ -275,6 +275,7 @@ void EnterTeaMenu() {
             switch (N) {
             case 1:
                 ResetAccountPwd();
+                
                 break;
             case 2:
                 while (!isBreak) {
@@ -594,6 +595,7 @@ void ResetAccountPwd() {
                 cout << " 旧密码输入错误!";
             }
         } while (!isOK);
+        cout << "\n "; system("pause");
     }
 }
 
@@ -851,7 +853,6 @@ void ChooseCourse() {
     //主循环
     while (true) {
         //确定学生
-        bool isStuSelect = false, isCourseSelect = false;
         IDTYPE StuID, CourseID;
         ShowAllStudent(true);
         cout << " ┄┄┄┄┄┄┄┄┄┄┄开┄┄┄┄┄┄┄┄┄┄始┄┄┄┄┄┄┄┄┄┄┄┄选┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
@@ -1047,7 +1048,6 @@ void EnterCourseMenu(IDTYPE courseID) {
         cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
         //输入循环
         do {
-            bool isBreak = false;
             N = -1;
             cin.clear();
             cin.ignore(INT_MAX, '\n');

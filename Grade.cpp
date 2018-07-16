@@ -65,7 +65,7 @@ const std::pair<int, double> Grade::Result2Pair() const {
         return std::make_pair(0, 0.0);
         break;
     default:
-        assert(m_eType != Account_None);
+        assert(m_eType != Result_None);
         return std::make_pair(0, 0.0);
         break;
     }
