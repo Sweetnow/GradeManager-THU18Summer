@@ -2,7 +2,7 @@
 
 IDTYPE Account::sm_iLastID = 10000000;
 
-Account::Account() {
+Account::Account():isPwdSet(false) {
 }
 
 

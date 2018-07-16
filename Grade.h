@@ -29,6 +29,7 @@ enum RESULT_GRAGE {
     F,
 };
 
+//存储成绩的结构体
 struct RESULT {
     RESULT_TYPE m_eType;
     union {
@@ -42,6 +43,22 @@ struct RESULT {
         m_uResult.Percent = result;    //所有均可以如此赋值
     }
 };
+
+//只用于排序的成绩结构体
+struct RESULT_FOR_SORT {
+    IDTYPE stuID;
+    int allPoint;
+    double sumResult;
+    RESULT_FOR_SORT(IDTYPE id, int point, double result) :
+        stuID(id), allPoint(point), sumResult(result) {
+        assert(allPoint >= 0 && sumResult >= 0);
+    }
+};
+
+//排序上述结构体的算子
+
+bool CMP_RESULT_FOR_SORT(const RESULT_FOR_SORT& left, const RESULT_FOR_SORT& right);
+
 
 
 class Grade :

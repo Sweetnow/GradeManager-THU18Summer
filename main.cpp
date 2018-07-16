@@ -9,7 +9,6 @@
 #include<iomanip>
 #include<vector>
 
-#define _INIT 0
 
 using std::cout;
 using std::cin;
@@ -24,6 +23,7 @@ std::map<IDTYPE, Grade>GradeMap;
 //是否退出整个程序
 bool isExit = false;
 
+//文件
 const char* FileName = "alldata.bin";
 
 //选择菜单
@@ -36,21 +36,19 @@ void CreateAccount();
 void DelAccount();
 void ResetAccountPwd();
 void ShowAllAccount();
-//没搞定
 void ShowAllTeacher();
 bool ShowOneTeacher();
-//
-void ShowAllStudent();
+bool ShowAllStudent(bool);
 bool ShowOneStudent();
 void ShowAllCourse();
 void ShowAllCourse(Account&);
 bool ShowOneCourse();
 bool ShowOneCourse(Account&);
+void SortAll();
 
 //选课模块
 
 void ChooseCourse();
-void ChooseCourseFile();
 
 //学生菜单功能模块
 
@@ -75,29 +73,37 @@ void SortAndShow(IDTYPE);
 //其他功能模块
 
 void Login();    //登陆
-void SaveFile(), LoadFile();    //文件操作
+void SaveFile(std::ofstream&), LoadFile(std::ifstream&);    //文件操作
 
 
 int main() {
-#if _INIT
-    Account master;
-    master.Init("A", "123456", Account_Administrator);
-    AccountMap[master.GetID()] = master;
-#else
-    LoadFile();
-#endif
+    std::ios::sync_with_stdio(false);
+    std::ifstream iFile(FileName, std::ios_base::binary);
+    if (iFile.is_open()) {
+        LoadFile(iFile);
+    }
+    else {
+        Account master;
+        master.Init("A", "123456", Account_Administrator);
+        AccountMap[master.GetID()] = master;
+    }
     //登陆
     while (!isExit) {
         Login();
         if (isExit) {
-            SaveFile();
-            return 0;
+            break;
         }
         //主界面
         EnterMainMenu();
     }
-
-    SaveFile();
+    std::ofstream oFile(FileName, std::ios_base::binary);
+    if (oFile.is_open())
+        SaveFile(oFile);
+    else {
+        cout << " Error: 数据文件未能成功打开" << endl;
+        system("pause");
+        exit(0);
+    }
     return 0;
 }
 
@@ -164,8 +170,7 @@ void EnterAdminMenu() {
                 break;
             case 6:
                 while (!isBreak) {
-                    ShowAllStudent();
-                    isBreak = ShowOneStudent();
+                    isBreak = ShowAllStudent(false);
                 }
                 break;
             case 7:
@@ -626,11 +631,31 @@ void ShowAllTeacher() {
 
 //查看某一教师账户详细信息
 bool ShowOneTeacher() {
-    return false;
+    IDTYPE id;
+    while (true) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << " 输入要查看的教师账户ID(0-返回上一级):";
+        cin >> id;
+        if (id == 0) {
+            return true;
+        }
+        if (AccountMap.find(id) == AccountMap.end() || AccountMap[id].GetAccountType() != Account_Teacher) {
+            cout << " 输入有误，请重新输入，";
+        }
+        else {
+            bool isBreak = false;
+            while (!isBreak) {
+                ShowAllCourse(AccountMap[id]);
+                isBreak = ShowOneCourse(AccountMap[id]);
+            }
+            return false;
+        }
+    }
 }
 
 //显示所有学生账户基本信息
-void ShowAllStudent() {
+bool ShowAllStudent(bool justShow) {
     //初始化
     system("cls");
     ShowHead();
@@ -644,6 +669,34 @@ void ShowAllStudent() {
         }
     }
     cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    if (!justShow) {
+        bool isInputCorrect = false;
+        int N;
+        do {
+            cout << " 选择查看项目(1-所有学生均绩排名 2-单个学生成绩 0-返回上一级):";
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+            cin >> N;
+            switch (N) {
+            case 1:
+                isInputCorrect = true;
+                SortAll();
+                return false;
+                break;
+            case 2:
+                isInputCorrect = true;
+                return ShowOneStudent();
+                break;
+            case 0:
+                return true;
+            default:
+                break;
+            }
+        } while (!isInputCorrect);
+        return false;
+    }
+    else
+        return false;
 }
 
 //查看某一学生账户详细信息
@@ -746,6 +799,53 @@ bool ShowOneCourse(Account& tea) {
     return false;
 }
 
+//排序所有学生的总成绩并显示（降序，转换为GPA，精度未小数点后6位）
+void SortAll() {
+    int allstuPoint = 0;
+    double allstuResult = 0;
+    system("cls");
+    ShowHead();
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄均┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄排┄┄┄┄┄┄┄┄┄┄┄名┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    std::vector<RESULT_FOR_SORT>sorted;
+    sorted.reserve(AccountMap.size());    //够用就是了
+    for (auto stu = AccountMap.begin(); stu != AccountMap.end(); stu++) {
+        //计算每个学生的绩点
+        if (stu->second.GetAccountType() == Account_Student) {
+            double sumResult = 0;    //统一转换为绩点处理
+            int allPoint = 0;    //总学分
+            for (auto it = stu->second.GetAccountCourseID().begin(); it != stu->second.GetAccountCourseID().end(); it++) {
+                if (GradeMap.find(*it + stu->second) == GradeMap.end()) {    //如果没有保存成绩的类，就创建之
+                    Grade grade(CourseMap[*it], stu->first);
+                    GradeMap[*it + stu->second] = grade;
+                }
+                const Grade& grade = GradeMap[*it + stu->second];
+                sumResult += grade.Result2Pair().second * grade.Result2Pair().first;
+                allPoint += grade.Result2Pair().first;
+            }
+            sorted.push_back(RESULT_FOR_SORT(stu->first, allPoint, sumResult));
+        }
+    }
+    std::sort(sorted.begin(), sorted.end(), CMP_RESULT_FOR_SORT);
+    int count = 1;
+    for (auto it = sorted.begin(); it != sorted.end(); it++) {
+        cout << ' ' << std::setw(3) << count++ << "  学生ID:" << it->stuID << "  账户名:" << std::setw(10) << std::left << AccountMap[it->stuID].GetUserName() << std::right;
+        if (it->allPoint == 0)
+            cout << " 平均绩点为: NaN" << endl;
+        else {
+            cout << " 平均绩点为:" << it->sumResult / it->allPoint << endl;
+            allstuPoint += it->allPoint;
+            allstuResult += it->sumResult;
+        }
+    }
+    cout << " ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
+    if (allstuPoint == 0)
+        cout << " 所有学生平均绩点为: NaN" << endl;
+    else
+        cout << " 所有学生平均绩点为:" << allstuResult / allstuPoint << '\n' << endl;
+    cout << ' '; system("pause");
+}
+
+
 //为学生选课(逐一添加)
 void ChooseCourse() {
     //主循环
@@ -753,7 +853,7 @@ void ChooseCourse() {
         //确定学生
         bool isStuSelect = false, isCourseSelect = false;
         IDTYPE StuID, CourseID;
-        ShowAllStudent();
+        ShowAllStudent(true);
         cout << " ┄┄┄┄┄┄┄┄┄┄┄开┄┄┄┄┄┄┄┄┄┄始┄┄┄┄┄┄┄┄┄┄┄┄选┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
         cout << " 请输入你要选择的学生ID(0-返回上一级):";
         cin.clear();
@@ -818,10 +918,6 @@ void ChooseCourse() {
     }
 }
 
-//从文件导入选课信息
-void ChooseCourseFile() {
-}
-
 //显示学生stu成绩信息
 void ShowStuGrade(Account& stu) {
     assert(stu.GetAccountType() == Account_Student);
@@ -835,7 +931,10 @@ void ShowStuGrade(Account& stu) {
     cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" << endl;
     cout << " ┄┄┄┄┄┄┄┄┄┄┄课┄┄┄┄┄┄┄┄┄┄程┄┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     for (auto it = stu.GetAccountCourseID().begin(); it != stu.GetAccountCourseID().end(); it++) {
-        assert(GradeMap.find(*it + stu) != GradeMap.end());
+        if (GradeMap.find(*it + stu) == GradeMap.end()) {    //如果没有保存成绩的类，就创建之
+            Grade grade(CourseMap[*it], stu.GetID());
+            GradeMap[*it + stu] = grade;
+        }
         const Grade& grade = GradeMap[*it + stu];
         cout << ' '; grade.Display(); cout << endl;
         sumResult += grade.Result2Pair().second * grade.Result2Pair().first;
@@ -1268,7 +1367,7 @@ void DelGrade(IDTYPE courseID) {
 
 //将课程中所有学生成绩降序排列，其中未录入的排在最后
 void SortAndShow(IDTYPE courseID) {
-    std::set<Grade,std::greater<const Grade&>>sorted;
+    std::set<Grade, std::greater<const Grade&>>sorted;
     for (auto it = CourseMap[courseID].GetCourseStudentID().begin(); it != CourseMap[courseID].GetCourseStudentID().end(); it++) {
         IDTYPE gradeID = _GET_GRADE_ID(*it, courseID);
         if (GradeMap.find(gradeID) == GradeMap.end()) {    //如果没有保存成绩的类，就创建之
@@ -1291,7 +1390,7 @@ void SortAndShow(IDTYPE courseID) {
     cout << " ┄┄┄┄┄┄┄┄┄┄┄成┄┄┄┄┄┄┄┄┄┄绩┄┄┄┄┄┄┄┄┄┄┄┄降┄┄┄┄┄┄┄┄┄┄┄序┄┄┄┄┄┄┄┄┄┄┄┄" << endl;
     //按序号排列学生
     for (auto it = sorted.begin(); it != sorted.end(); it++) {
-        
+
         const Grade& grade = *it;
         cout << " 学生ID:" << it->GetStuID() << "  账户名:" << std::setw(10) << std::left << AccountMap[it->GetStuID()].GetUserName() << std::right;
         cout << ' '; grade.DisplayGradeOnly(); cout << endl;
@@ -1340,8 +1439,7 @@ void SortAndShow(IDTYPE courseID) {
 }
 
 //写二进制文件，保存全部信息
-void SaveFile() {
-    std::ofstream File(FileName, std::ios_base::binary);
+void SaveFile(std::ofstream& File) {
     if (File.is_open()) {
         //写入AccountMap
         size_t accountSize = AccountMap.size();
@@ -1377,8 +1475,7 @@ void SaveFile() {
 }
 
 //读二进制文件，读取全部信息
-void LoadFile() {
-    std::ifstream File(FileName, std::ios_base::binary);
+void LoadFile(std::ifstream& File) {
     if (File.is_open()) {
         //读取AccountMap
         size_t accountSize;
@@ -1414,7 +1511,7 @@ void LoadFile() {
         File.close();
     }
     else {
-        cout << "数据文件未能成功打开" << endl;
+        cout << " Error: 数据文件未能成功打开" << endl;
         system("pause");
         exit(0);
     }

@@ -1,5 +1,17 @@
 #include "Grade.h"
 
+bool CMP_RESULT_FOR_SORT(const RESULT_FOR_SORT& left, const RESULT_FOR_SORT& right) {
+    if (left.allPoint == 0 && right.allPoint == 0) {
+        return left.stuID < right.stuID;
+    }
+    else if (left.allPoint == 0)
+        return false;
+    else if (right.allPoint == 0)
+        return true;
+    else {
+        return left.sumResult / left.allPoint > right.sumResult / right.allPoint || (left.sumResult / left.allPoint == right.sumResult / right.allPoint&&left.stuID < right.stuID);
+    }
+}
 
 Grade::Grade() {
 }
@@ -46,7 +58,7 @@ const std::pair<int, double> Grade::Result2Pair() const {
         return std::make_pair(0, 0.0);
         break;
     default:
-        assert(m_eType!=Account_None);
+        assert(m_eType != Account_None);
         return std::make_pair(0, 0.0);
         break;
     }

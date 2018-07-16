@@ -54,6 +54,6 @@ protected:
     ACCOUNT_TYPE m_eType;    //账户类型
     std::set<IDTYPE>m_setCourseID;    //可访问的课程ID
 private:
-    bool isPwdSet = false;    //密码是否为第一次设置
+    bool isPwdSet;    //密码是否为第一次设置
 };
 
