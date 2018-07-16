@@ -1118,7 +1118,7 @@ void ShowAllStuInCourse(IDTYPE courseID) {
             break;
         case Result_Grade:
             if (grade.GetGradeResult().m_eType == Result_Grade) {
-                sumResult += GRADE_TO_GPA[grade.GetGradeResult().m_uResult.GPA];
+                sumResult += Grade::GRADE_TO_GPA[grade.GetGradeResult().m_uResult.GPA];
                 count++;
                 hasGrade[grade.GetGradeResult().m_uResult.GPA] = true;
             }
@@ -1142,7 +1142,7 @@ void ShowAllStuInCourse(IDTYPE courseID) {
                 if (hasGrade[i])
                     minGrade = i;
             }
-            cout << " 平均绩点:" << sumResult / count << "  最高绩点:" << GRADE_TO_GPA[maxGrade] << "  最低绩点:" << GRADE_TO_GPA[minGrade] << endl;
+            cout << " 平均绩点:" << sumResult / count << "  最高绩点:" << Grade::GRADE_TO_GPA[maxGrade] << "  最低绩点:" << Grade::GRADE_TO_GPA[minGrade] << endl;
         }
     }
     cout << "\n "; system("pause");
@@ -1408,7 +1408,7 @@ void SortAndShow(IDTYPE courseID) {
             break;
         case Result_Grade:
             if (grade.GetGradeResult().m_eType == Result_Grade) {
-                sumResult += GRADE_TO_GPA[grade.GetGradeResult().m_uResult.GPA];
+                sumResult += Grade::GRADE_TO_GPA[grade.GetGradeResult().m_uResult.GPA];
                 count++;
                 hasGrade[grade.GetGradeResult().m_uResult.GPA] = true;
             }
@@ -1432,7 +1432,7 @@ void SortAndShow(IDTYPE courseID) {
                 if (hasGrade[i])
                     minGrade = i;
             }
-            cout << " 平均绩点:" << sumResult / count << "  最高绩点:" << GRADE_TO_GPA[maxGrade] << "  最低绩点:" << GRADE_TO_GPA[minGrade] << endl;
+            cout << " 平均绩点:" << sumResult / count << "  最高绩点:" << Grade::GRADE_TO_GPA[maxGrade] << "  最低绩点:" << Grade::GRADE_TO_GPA[minGrade] << endl;
         }
     }
     cout << "\n "; system("pause");

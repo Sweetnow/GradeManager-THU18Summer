@@ -13,11 +13,16 @@ public:
     virtual void Display()const = 0;    //显示类
     virtual void Write(std::ofstream&)const;    //写入二进制文件
     virtual void Read(std::ifstream&);    //从二进制文件中读取
-                                          //Get
+
+    //Get
     IDTYPE GetID()const;
 protected:
     IDTYPE m_iID;
-    bool isInit = false;    //类是否被初始化过
+    bool isInit;    //类是否被初始化过
+    mutable bool hasWritten;    //类是否被存入文件中
+private:
+    static IDTYPE sm_iFirstID;    //起始ID
+
 };
 
 

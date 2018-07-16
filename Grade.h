@@ -8,12 +8,7 @@
 #define PASS (true)
 #define FAIL (false)
 
-const char* const RESULT_GRADE_TO_STR[12] =
-{ "A+","A ","A-","B+","B ","B-","C+","C ","C-","D+","D ","F " };
-const double GRADE_TO_GPA[12] =
-{ 4.0,  4.0,  3.7,      3.3,   3.0,   2.7,      2.3,  2.0,    1.7,      1.3,  1,  0 };
-const int PERCENT_TO_GRADE[13] =
-{ 101,100,95,90,85,80,77,73,70,67,63,60,-1 };
+
 enum RESULT_GRAGE {
     A_PLUS,
     A,
@@ -82,6 +77,9 @@ public:
     //只显示成绩
     void DisplayGradeOnly()const;
     friend bool operator>(const Grade&, const Grade&);
+    static const char* const RESULT_GRADE_TO_STR[12]; //用于将等级转换为A+...
+    static const double GRADE_TO_GPA[12];  //用于将等级转换为GPA
+    static const int PERCENT_TO_GRADE[13];  //用于将百分制转换为GPA
 protected:
     RESULT m_Result;
     IDTYPE m_iStuID;

@@ -1,5 +1,12 @@
 #include "Grade.h"
 
+const char* const Grade::RESULT_GRADE_TO_STR[12] =
+{ "A+","A ","A-","B+","B ","B-","C+","C ","C-","D+","D ","F " };
+const double Grade::GRADE_TO_GPA[12] =
+{ 4.0,  4.0,  3.7,      3.3,   3.0,   2.7,      2.3,  2.0,    1.7,      1.3,  1,  0 };
+const int Grade::PERCENT_TO_GRADE[13] =
+{ 101,100,95,90,85,80,77,73,70,67,63,60,-1 };
+
 bool CMP_RESULT_FOR_SORT(const RESULT_FOR_SORT& left, const RESULT_FOR_SORT& right) {
     if (left.allPoint == 0 && right.allPoint == 0) {
         return left.stuID < right.stuID;
