@@ -22,7 +22,6 @@ protected:
     mutable bool hasWritten;    //类是否被存入文件中
 private:
     static IDTYPE sm_iFirstID;    //起始ID
-
 };
 
 
